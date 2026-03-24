@@ -1,0 +1,19 @@
+backend:
+
+cd nombre-carpeta
+source venv/Scripts/activate
+uvicorn main:app --reload --port 8000
+
+Explicación rápida:
+main → archivo main.py
+app → objeto FastAPI()
+--reload → reinicia cuando cambiás código (OPCIONAL)
+--port 8000 → puerto local
+
+# Levantar el servidor en ngrok para tenerlo en un endpoit publico
+
+ngrok http 8000
+
+Esto nos dara una url publica para usar para testear con mercado pago y demas cosas
+
+

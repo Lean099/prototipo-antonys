@@ -1,0 +1,49 @@
+# 🔹 Entorno virtual
+venv/
+.env/
+.venv/
+
+# 🔹 Variables de entorno (MUY IMPORTANTE)
+.env
+
+# 🔹 Archivos de Python compilados
+__pycache__/
+*.py[cod]
+*$py.class
+
+# 🔹 Archivos de sistema
+.DS_Store
+Thumbs.db
+
+# 🔹 Logs
+*.log
+
+# 🔹 Archivos de base de datos locales
+*.sqlite3
+*.db
+
+# 🔹 Archivos temporales
+*.swp
+*.swo
+
+# 🔹 Configuración de VS Code / IDEs
+.vscode/
+.idea/
+
+# 🔹 Archivos de testing/cobertura
+.coverage
+htmlcov/
+.pytest_cache/
+
+# 🔹 Archivos de migraciones (opcional según uso)
+# migrations/
+
+# 🔹 Archivos de uploads (si guardás imágenes o archivos)
+uploads/
+media/
+
+# 🔹 Cache de dependencias
+pip-wheel-metadata/
+
+# 🔹 Archivos de Docker (si después usás)
+# docker-compose.override.yml
