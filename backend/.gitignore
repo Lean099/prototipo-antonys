@@ -20,7 +20,7 @@ Thumbs.db
 
 # 🔹 Archivos de base de datos locales
 *.sqlite3
-*.db
+#*.db
 
 # 🔹 Archivos temporales
 *.swp

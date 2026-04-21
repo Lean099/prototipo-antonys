@@ -1,8 +1,8 @@
 import axios from 'axios'
 import { useState } from 'react'
-import { useAuthStore } from "../store/authStore"
+import { useAuthStore } from "../../store/authStore"
 
-const ModalLogin = () => {
+const ModalLogin = ({id}) => {
 
     const [formData, setFormDataLogin] = useState({
         email: "",
@@ -41,13 +41,13 @@ const ModalLogin = () => {
     return (
         <>
             <button
-                onClick={() => document.getElementById('my_modal_1').showModal()}
+                onClick={() => document.getElementById(id).showModal()}
                 className="btn btn-sm btn-soft bg-[#EBE1D1] text-[#222222]"
             >
                 Iniciar Sesión
             </button>
 
-            <dialog id="my_modal_1" className="modal modal-bottom sm:modal-middle">
+            <dialog id={id} className="modal modal-bottom sm:modal-middle">
                 <div className="modal-box max-w-md">
 
                     {/* botón cerrar */}

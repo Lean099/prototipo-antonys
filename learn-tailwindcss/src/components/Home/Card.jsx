@@ -1,8 +1,13 @@
 import { useNavigate } from "react-router-dom";
+import { ShoppingCart } from "lucide-react";
+import { useCartStore } from "../../store/useCartStore";
 
-const Card = ({id, title, description, price, image, addToCart})=>{
+const Card = ({id, title, description, price, image})=>{
 
     const navigate = useNavigate()
+    const {
+    addToCart
+  } = useCartStore();
 
     return(
         <div className="card bg-base-100 shadow-md">
@@ -19,7 +24,12 @@ const Card = ({id, title, description, price, image, addToCart})=>{
                 <div className="card-actions justify-between items-center">
                     <span className="font-bold">${price}</span>
                     <div className="">
-                        <button className="btn btn-sm mr-2 text-[#222222] bg-[#EBE1D1]" onClick={()=> {addToCart({id, title, price, image})}}>Agregar</button>
+                        <button className="btn btn-sm mr-2 text-[#222222] bg-[#EBE1D1]" onClick={()=> {addToCart({id, title, price, image})}}>
+                            Agregar
+                            
+                        <ShoppingCart className="w-4 h-4"/>
+
+                        </button>
                         <button className="btn btn-sm btn-soft text-[#222222] bg-[#EBE1D1]" onClick={()=> {addToCart({id, title, price, image}); navigate('/checkout')}}>Comprar</button>
                     </div>
                 </div>

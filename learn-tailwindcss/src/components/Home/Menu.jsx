@@ -1,11 +1,11 @@
-import Card from '../components/Card'
-import menu from '../data'
+import Card from './Card'
+import menu from '../../data'
 
-const Menu = ({addToCart})=>{
+const Menu = ()=>{
     return(
         <div>
             <div className="text-center">
-                <p className="inline-block text-[#222222] bg-[#EBE1D1] px-4 py-2 rounded text-2xl font-bold my-5">
+                <p id='menu' className="inline-block text-[#222222] bg-[#EBE1D1] px-4 py-2 rounded text-2xl font-bold my-5">
                     Menu de comidas
                 </p>
             </div>
@@ -16,7 +16,7 @@ const Menu = ({addToCart})=>{
 
                 {
                     menu.map(item =>(
-                        <Card key={item.id} {...item} addToCart={addToCart}/>
+                        <Card key={item.id} {...item}/>
                     ))
                 }
 

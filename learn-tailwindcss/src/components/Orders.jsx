@@ -40,7 +40,7 @@ const Orders = ()=>{
 
       <h2 className="text-xl font-bold mb-4">Mis pedidos</h2>
 
-      {/* 🖥️ TABLA */}
+      {/* TABLA */}
       <div className="hidden md:block">
         <table className="table w-full">
           <thead>
@@ -82,7 +82,7 @@ const Orders = ()=>{
         </table>
       </div>
 
-      {/* 📱 MOBILE */}
+      {/* MOBILE */}
       <div className="md:hidden space-y-4">
         {pedidos.map((p) => (
           <div key={p.id} className="card bg-base-100 shadow p-4">
@@ -110,7 +110,7 @@ const Orders = ()=>{
         ))}
       </div>
 
-      {/* 🧩 MODAL */}
+      {/* MODAL */}
       <dialog ref={modalRef} className="modal">
         <div className="modal-box">
           <h3 className="font-bold text-lg">

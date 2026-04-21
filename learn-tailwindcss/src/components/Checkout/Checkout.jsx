@@ -1,6 +1,12 @@
 import PaymentMethods from './PaymentMethods'
+import { useCartStore } from "../../store/useCartStore";
 
-const Checkout = ({cart, total})=>{
+const Checkout = ()=>{
+    
+    const {
+    cart,
+    getTotal
+  } = useCartStore();
 
     return(
         <>
@@ -26,12 +32,12 @@ const Checkout = ({cart, total})=>{
 
             <div className="flex justify-between font-bold text-lg">
                 <span>Total</span>
-                <span>${total}</span>
+                <span>${getTotal}</span>
             </div>
 
             
 
-                <PaymentMethods cart={cart} total={total}/>
+                <PaymentMethods cart={cart} total={getTotal}/>
             </div>
         </>
     )

@@ -1,5 +1,5 @@
 import { useState, useRef } from "react";
-import { useAuthStore } from "../store/authStore";
+import { useAuthStore } from "../../store/authStore";
 import Avatar from "./Avatar";
 
 const Profile = () => {
