@@ -45,18 +45,23 @@ const Checkout = () => {
           <span className="">${getTotal().toLocaleString()}</span>
         </div>
       </div>
+      {
+        cart.length > 0 && 
+        <>
+        {/* COMPONENTE DE SELECCIÓN DE ENVÍO */}
+          <ShippingSelector />
 
-      {/* COMPONENTE DE SELECCIÓN DE ENVÍO */}
-      <ShippingSelector />
-
-      {/* MÉTODOS DE PAGO */}
-      {/* Se desbloquean solo cuando el usuario define la logística */}
-      {deliveryOption && (
-        <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
-          <hr className="my-10 border-base-300" />
-          <PaymentMethods cart={cart} total={getTotal()} />
-        </div>
-      )}
+          {/* MÉTODOS DE PAGO */}
+          {/* Se desbloquean solo cuando el usuario define la logística */}
+          {deliveryOption && (
+            <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
+              <hr className="my-10 border-base-300" />
+              <PaymentMethods cart={cart} total={getTotal()} />
+            </div>
+          )}
+        </>
+      }
+      
     </div>
   );
 };
