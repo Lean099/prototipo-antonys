@@ -1,4 +1,4 @@
-import PaymentMethods from './PaymentMethods'
+import PaymentMethods from './PaymentMethods2'
 import { useCartStore } from "../../store/useCartStore";
 
 const Checkout = ()=>{

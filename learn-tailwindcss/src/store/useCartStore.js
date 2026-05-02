@@ -6,11 +6,6 @@ export const useCartStore = create(
     (set, get) => ({
       cart: [],
 
-      // Faltaria agregar para controlar cuando abre y cierra el carrito
-      open: (isOpen)=>{
-        set(!isOpen)
-      },
-
       addToCart: (product) => {
         const existing = get().cart.find(item => item.id === product.id)
 
