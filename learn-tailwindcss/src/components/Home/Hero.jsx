@@ -10,7 +10,7 @@ const Hero = ()=>{
         {/* TEXTO */}
         <div className="space-y-5 text-center md:text-left">
 
-          <h1 className="text-4xl md:text-5xl font-bold">
+          <h1 className="text-4xl md:text-5xl font-bold mt-7">
             Sabor auténtico, entregado caliente
           </h1>
 
@@ -24,7 +24,7 @@ const Hero = ()=>{
 
             <button 
             onClick={() => { document.getElementById("menu").scrollIntoView({ behavior: "smooth" });}}
-            className="btn rounded-full px-6 bg-[#EBE1D1] text-[#222222] border-none">
+            className="btn rounded-full px-6 btn-primary">
               Ver menú
             </button>
 

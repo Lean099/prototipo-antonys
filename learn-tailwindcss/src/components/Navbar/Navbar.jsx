@@ -1,11 +1,14 @@
 import logo1 from '../../../public/logo1-inverted.png'
+import logo2 from '../../../public/logo1.png'
 import defaultPhoto from '../../../public/default-photo.webp'
 import {TextAlignJustify, ShoppingCart} from 'lucide-react'
 import { useNavigate, Link } from 'react-router-dom'
 import {useState} from 'react'
 import ModalLogin from '././ModalLogin'
 import ModalSignUp from '././ModalSignup'
+import ThemeToggle from './ThemeToggle'
 import { useAuthStore } from '../../store/authStore'
+import { useThemeStore } from '../../store/useThemeStore'
 import Cart from './Cart'
 
 const Navbar = ({cart, total, removeFromCart, updateQuantity})=>{
@@ -13,6 +16,7 @@ const Navbar = ({cart, total, removeFromCart, updateQuantity})=>{
     const navigate = useNavigate()
     const [open, setOpen] = useState(false)
 
+    const theme = useThemeStore((state) => state.theme)
     const user = useAuthStore((state)=> state.user)
     const logout = useAuthStore((state)=> state.logout)
     const testUser = ()=>{
@@ -33,10 +37,11 @@ const Navbar = ({cart, total, removeFromCart, updateQuantity})=>{
                       <ul class="menu dropdown-content bg-base-100 rounded-box z-1 w-45 p-2 shadow-sm">
                         <li><Link className="flex justify-center w-full" to="/">Inicio</Link></li>
                         <li><Link className="flex justify-center w-full" to="/#menu">Menu</Link></li>
-                        <li><Link className="flex justify-center w-full" to="/contacto">Contacto</Link></li>
+                        <li className='mb-2'><Link className="flex justify-center w-full" to="/contacto">Contacto</Link></li>
                         {!user && (
                           <>
                             <ModalLogin id="my_modal_1"/>
+                            <div className='my-1'></div>
                             <ModalSignUp id="my_modal_2"/>
                           </>
                         )}
@@ -56,16 +61,16 @@ const Navbar = ({cart, total, removeFromCart, updateQuantity})=>{
                 {/* Logo */}
                 <div className="flex-1">
                   <Link to="/" className="btn btn-ghost text-xl">
-                    <img src={logo1} className='w-20 h-20 object-contain' alt="" srcset="" />
+                    <img src={theme === 'cupcake' ? logo2 : logo1} className='w-20 h-20 object-contain' alt="" srcset="" />
                   </Link>
                   
                 </div>
 
                 {/* Botones para las pantallas mas grandes */}
                 <div className="hidden md:flex gap-2 mr-3">
-                  <Link to="/" className="btn btn-sm btn-soft bg-[#EBE1D1] text-[#222222]">Inicio</Link>
-                  <Link to="/#menu" className="btn btn-sm btn-soft bg-[#EBE1D1] text-[#222222]">Menu</Link>
-                  <Link to="/contacto" className="btn btn-sm btn-soft bg-[#EBE1D1] text-[#222222]">Contacto</Link>
+                  <Link to="/" className="btn btn-sm btn-primary border-none">Inicio</Link>
+                  <Link to="/#menu" className="btn btn-sm btn-primary border-none">Menu</Link>
+                  <Link to="/contacto" className="btn btn-sm btn-primary border-none">Contacto</Link>
                   { !user ?  (
                     <>
                       <ModalLogin id="my_modal_3"/>
@@ -80,6 +85,10 @@ const Navbar = ({cart, total, removeFromCart, updateQuantity})=>{
                       </div>
                     </>
                   ) }
+                </div>
+
+                <div>
+                  <ThemeToggle/>
                 </div>
 
                 {/* Derecha */}

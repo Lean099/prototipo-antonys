@@ -24,13 +24,13 @@ const Card = ({id, title, description, price, image})=>{
                 <div className="card-actions justify-between items-center">
                     <span className="font-bold">${price}</span>
                     <div className="">
-                        <button className="btn btn-sm mr-2 text-[#222222] bg-[#EBE1D1]" onClick={()=> {addToCart({id, title, price, image})}}>
+                        <button className="btn btn-sm mr-2 btn-primary" onClick={()=> {addToCart({id, title, price, image})}}>
                             Agregar
                             
                         <ShoppingCart className="w-4 h-4"/>
 
                         </button>
-                        <button className="btn btn-sm btn-soft text-[#222222] bg-[#EBE1D1]" onClick={()=> {addToCart({id, title, price, image}); navigate('/checkout')}}>Comprar</button>
+                        <button className="btn btn-sm btn-primary" onClick={()=> {addToCart({id, title, price, image}); navigate('/checkout')}}>Comprar</button>
                     </div>
                 </div>
             </div>

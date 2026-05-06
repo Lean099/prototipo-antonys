@@ -42,7 +42,7 @@ const ModalLogin = ({id}) => {
         <>
             <button
                 onClick={() => document.getElementById(id).showModal()}
-                className="btn btn-sm btn-soft bg-[#EBE1D1] text-[#222222]"
+                className="btn btn-sm btn-primary border-none"
             >
                 Iniciar Sesión
             </button>
@@ -66,7 +66,7 @@ const ModalLogin = ({id}) => {
 
                         {/* EMAIL */}
                         <div>
-                            <label className="label">Email</label>
+                            <label className="label mb-2">Email</label>
                             <input
                                 type="email"
                                 name="email"
@@ -80,7 +80,7 @@ const ModalLogin = ({id}) => {
 
                         {/* PASSWORD */}
                         <div>
-                            <label className="label">Contraseña</label>
+                            <label className="label mb-2">Contraseña</label>
 
                             <div className="relative">
                                 <input
@@ -97,7 +97,7 @@ const ModalLogin = ({id}) => {
                                 <button
                                     type="button"
                                     onClick={() => setShowPassword(!showPassword)}
-                                    className="absolute right-2 top-1/2 -translate-y-1/2 text-sm"
+                                    className="absolute right-4 top-1/2 -translate-y-1/2 text-sm"
                                 >
                                     {showPassword ? "Ocultar" : "Ver"}
                                 </button>

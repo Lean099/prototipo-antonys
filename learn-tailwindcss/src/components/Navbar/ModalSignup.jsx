@@ -43,7 +43,7 @@ const ModalSignUp = ({id}) => {
         <>
             <button
                 onClick={() => document.getElementById(id).showModal()}
-                className="btn btn-sm btn-soft bg-[#EBE1D1] text-[#222222]"
+                className="btn btn-sm btn-primary border-none"
             >
                 Registrarse
             </button>
@@ -67,7 +67,7 @@ const ModalSignUp = ({id}) => {
 
                         {/* EMAIL */}
                         <div className="md:col-span-2">
-                            <label className="label">Email</label>
+                            <label className="label mb-2">Email</label>
                             <input
                                 type="email"
                                 name="email"
@@ -81,7 +81,7 @@ const ModalSignUp = ({id}) => {
 
                         {/* NOMBRE */}
                         <div>
-                            <label className="label">Nombre</label>
+                            <label className="label mb-2">Nombre</label>
                             <input
                                 type="text"
                                 name="name"
@@ -95,7 +95,7 @@ const ModalSignUp = ({id}) => {
 
                         {/* TELEFONO */}
                         <div>
-                            <label className="label">Teléfono</label>
+                            <label className="label mb-2">Teléfono</label>
                             <input
                                 type="text"
                                 name="telefono"
@@ -108,7 +108,7 @@ const ModalSignUp = ({id}) => {
 
                         {/* DIRECCION */}
                         <div className="md:col-span-2">
-                            <label className="label">Dirección</label>
+                            <label className="label mb-2">Dirección</label>
                             <input
                                 type="text"
                                 name="direccion"
@@ -121,7 +121,7 @@ const ModalSignUp = ({id}) => {
 
                         {/* PASSWORD */}
                         <div className="md:col-span-2">
-                            <label className="label">Contraseña</label>
+                            <label className="label mb-2">Contraseña</label>
                             <input
                                 type="password"
                                 name="passw"

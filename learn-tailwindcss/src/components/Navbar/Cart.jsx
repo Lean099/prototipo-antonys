@@ -99,7 +99,7 @@ const Cart2 = () => {
               </button>
 
               <button
-                className="btn btn-error btn-sm w-full"
+                className="btn btn-neutral btn-sm w-full"
                 onClick={clearCart}
                 disabled={cart.length === 0}
               >

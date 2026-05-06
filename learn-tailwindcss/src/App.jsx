@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react'
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import './App.css'
+import { useThemeStore } from "./store/useThemeStore";
 import Navbar from './components/Navbar/Navbar'
 import Home from './components/Home/Home'
-import Checkout from './components/Checkout/Checkout2'
+import Checkout from './components/Checkout/Checkout'
 import Contact from './components/Contact';
 import Profile from './components/Profile/Profile';
 import Orders from './components/Orders';
@@ -11,6 +12,12 @@ import Footer from './components/Footer';
 import ScrollToTop from './components/ScrollToTop';
 
 function App() {
+
+  const theme = useThemeStore((state) => state.theme);
+
+  useEffect(() => {
+    document.documentElement.setAttribute("data-theme", theme);
+  }, [theme]);
 
   return (
         <BrowserRouter>
