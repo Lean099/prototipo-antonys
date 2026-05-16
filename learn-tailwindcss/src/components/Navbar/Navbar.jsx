@@ -78,9 +78,9 @@ const Navbar = ({cart, total, removeFromCart, updateQuantity})=>{
                     </>
                   ): (
                     <>
-                      <div className="flex items-center gap-2">
-                        <span className="text-sm md:text-base font-mono">
-                          Hola {user.name}
+                      <div className="flex items-center ml-2 gap-2">
+                        <span className="text-sm md:text-base font-light">
+                          Hola! {user.name} 
                         </span>
                       </div>
                     </>
@@ -93,28 +93,33 @@ const Navbar = ({cart, total, removeFromCart, updateQuantity})=>{
 
                 {/* Derecha */}
                 {/* Boton de carrito 1 */}
-                <div className="flex-none gap-3">
-                  
-                  <Cart/>
+                {
+                  user && (
+                    <div className="flex-none gap-3">
+                      
+                      <Cart/>
 
-                  {/* Boton de cuenta */}
-                  <div className="dropdown dropdown-end">
-                    <div tabIndex={0} role="button" className="btn btn-ghost btn-circle avatar">
-                      <div className="w-10 rounded-full">
-                        <img
-                          alt="Tailwind CSS Navbar component"
-                          src={defaultPhoto} />
+                      {/* Boton de cuenta */}
+                      <div className="dropdown dropdown-end">
+                        <div tabIndex={0} role="button" className="btn btn-ghost btn-circle avatar">
+                          <div className="w-10 rounded-full">
+                            <img
+                              alt="Tailwind CSS Navbar component"
+                              src={defaultPhoto} />
+                          </div>
+                        </div>
+                        <ul
+                          tabIndex="-1"
+                          className="menu menu-sm dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow">
+                          <li><Link to='/perfil'>Perfil</Link></li>
+                          <li><Link to='/pedidos'>Pedidos</Link></li>
+                          <li><a onClick={logoutTest}>Cerrar Sesion</a></li>
+                        </ul>
                       </div>
                     </div>
-                    <ul
-                      tabIndex="-1"
-                      className="menu menu-sm dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow">
-                      <li><Link to='/perfil'>Perfil</Link></li>
-                      <li><Link to='/pedidos'>Pedidos</Link></li>
-                      <li><a onClick={logoutTest}>Cerrar Sesion</a></li>
-                    </ul>
-                  </div>
-                </div>
+                  )
+                }
+                
 
             </div>
 

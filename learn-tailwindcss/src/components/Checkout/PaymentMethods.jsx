@@ -2,10 +2,13 @@ import { useState, useEffect } from "react";
 import { CreditCard, Landmark, Banknote, Copy, Check } from "lucide-react"; // Importamos los íconos
 import axios from 'axios';
 import { useCheckoutStore } from "../../store/useCheckoutStore";
+import { useThemeStore } from "../../store/useThemeStore"
 
 const PaymentMethods = ({ cart, total }) => {
 
+  const API_URL = import.meta.env.VITE_API_URL_NGROK
   const { deliveryOption, paymentMethodsOption, setPMSelected } = useCheckoutStore();
+  const { theme } = useThemeStore();
   const [loading, setLoading] = useState(false);  // Se usa solo para simular
   const [initPoint, setInitPoint] = useState("");
   const [cashMethod, setCashMethod] = useState(null);  // delivery | pickup
@@ -39,7 +42,7 @@ const PaymentMethods = ({ cart, total }) => {
   const handleMercadoPago = async () => {
     setLoading(true);
     try {
-      const res = await axios.post("https://drucilla-nonfashionable-nonaesthetically.ngrok-free.dev/crear-preferencia", { items: cart, total });
+      const res = await axios.post(`${API_URL}/crear-preferencia`, { items: cart, total });
       setInitPoint(res.data.init_point);
     } catch (error) {
       console.log("Error: ", error);
@@ -67,7 +70,7 @@ const PaymentMethods = ({ cart, total }) => {
             key={method.id}
             onClick={() => { setPMSelected(method.id); setCashMethod(null); }}
             className={`cursor-pointer border rounded-xl p-4 flex flex-col items-center justify-center gap-2 transition
-              ${paymentMethodsOption === method.id ? "border-neutral bg-neutral/10 scale-105" : "hover:border-neutral hover:scale-105"}
+              ${paymentMethodsOption === method.id ? (theme === 'cupcake' ? "border-neutral bg-neutral/10 scale-105" : "border-secondary bg-secondary/10 scale-105") : (theme === 'cupcake' ? "hover:border-neutral hover:scale-105" : "hover:border-secondary hover:scale-105")}
             `}
           >
             {method.icon}

@@ -4,9 +4,10 @@ import { useAuthStore } from "../../store/authStore"
 
 const ModalLogin = ({id}) => {
 
+    const API_URL = import.meta.env.VITE_API_URL
     const [formData, setFormDataLogin] = useState({
-        email: "",
-        passw: ""
+        identifier: "",
+        password: ""
     });
 
     const [showPassword, setShowPassword] = useState(false);
@@ -27,7 +28,7 @@ const ModalLogin = ({id}) => {
 
         try {
             const response = await axios.post(
-                "https://drucilla-nonfashionable-nonaesthetically.ngrok-free.dev/login",
+                `${API_URL}/auth/login`,
                 formData
             )
 
@@ -66,14 +67,14 @@ const ModalLogin = ({id}) => {
 
                         {/* EMAIL */}
                         <div>
-                            <label className="label mb-2">Email</label>
+                            <label className="label mb-2">Nombre de usuario o tu Email</label>
                             <input
-                                type="email"
-                                name="email"
-                                value={formData.email}
+                                type="text"
+                                name="identifier"
+                                value={formData.identifier}
                                 onChange={handleChangeLogin}
                                 required
-                                placeholder="mail@site.com"
+                                placeholder="pepito / mail@site.com"
                                 className="input input-bordered w-full"
                             />
                         </div>
@@ -85,8 +86,8 @@ const ModalLogin = ({id}) => {
                             <div className="relative">
                                 <input
                                     type={showPassword ? "text" : "password"}
-                                    name="passw"
-                                    value={formData.passw}
+                                    name="password"
+                                    value={formData.password}
                                     onChange={handleChangeLogin}
                                     required
                                     placeholder="********"

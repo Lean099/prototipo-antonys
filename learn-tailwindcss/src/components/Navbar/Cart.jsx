@@ -2,10 +2,12 @@ import { useCartStore } from "../../store/useCartStore";
 import { ShoppingCart, Plus, Minus, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useThemeStore } from "../../store/useThemeStore"
 
 const Cart2 = () => {
   const navigate = useNavigate();
 
+  const { theme } = useThemeStore();
   const {
     cart,
     updateQuantity,

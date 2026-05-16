@@ -4,12 +4,12 @@ import { useAuthStore } from "../../store/authStore"
 
 const ModalSignUp = ({id}) => {
 
+    const API_URL = import.meta.env.VITE_API_URL
     const [formData, setFormData] = useState({
-        name: "",
+        username: "",
         email: "",
-        passw: "",
-        direccion: "",
-        telefono: ""
+        password: "",
+        phone: ""
     });
 
     const login = useAuthStore((state) => state.login)
@@ -27,8 +27,9 @@ const ModalSignUp = ({id}) => {
         e.preventDefault();
 
         try {
+            console.log(formData)
             const response = await axios.post(
-                "https://drucilla-nonfashionable-nonaesthetically.ngrok-free.dev/create-user",
+                `${API_URL}/auth/register`,
                 formData
             );
 
@@ -84,8 +85,8 @@ const ModalSignUp = ({id}) => {
                             <label className="label mb-2">Nombre</label>
                             <input
                                 type="text"
-                                name="name"
-                                value={formData.name}
+                                name="username"
+                                value={formData.username}
                                 onChange={handleChange}
                                 required
                                 placeholder="Tu nombre"
@@ -98,23 +99,10 @@ const ModalSignUp = ({id}) => {
                             <label className="label mb-2">Teléfono</label>
                             <input
                                 type="text"
-                                name="telefono"
-                                value={formData.telefono}
+                                name="phone"
+                                value={formData.phone}
                                 onChange={handleChange}
                                 placeholder="+54 381..."
-                                className="input input-bordered w-full"
-                            />
-                        </div>
-
-                        {/* DIRECCION */}
-                        <div className="md:col-span-2">
-                            <label className="label mb-2">Dirección</label>
-                            <input
-                                type="text"
-                                name="direccion"
-                                value={formData.direccion}
-                                onChange={handleChange}
-                                placeholder="Calle, número..."
                                 className="input input-bordered w-full"
                             />
                         </div>
@@ -124,8 +112,8 @@ const ModalSignUp = ({id}) => {
                             <label className="label mb-2">Contraseña</label>
                             <input
                                 type="password"
-                                name="passw"
-                                value={formData.passw}
+                                name="password"
+                                value={formData.password}
                                 onChange={handleChange}
                                 required
                                 placeholder="********"

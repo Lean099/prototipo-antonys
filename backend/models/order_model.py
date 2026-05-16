@@ -1,18 +1,7 @@
-from sqlalchemy import Column, Integer, String, Float, ForeignKey, DateTime
+from sqlalchemy import Column, Integer, String, Float, ForeignKey, DateTime, func
 from sqlalchemy.orm import relationship
 from datetime import datetime
-from database import Base
-
-class User(Base):
-    __tablename__ = "users"
-
-    id = Column(Integer, primary_key=True)
-    name = Column(String)
-    email = Column(String)
-    passw = Column(String)
-
-    orders = relationship("Order", back_populates="user")
-
+from config.database import Base
 
 class Order(Base):
     __tablename__ = "orders"
@@ -23,6 +12,9 @@ class Order(Base):
     status = Column(String, default="pending")  
     preference_id = Column(String, nullable=True)
     payment_id = Column(String, nullable=True)
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(
+        DateTime(timezone=True),
+        server_default=func.now()
+    )
 
     user = relationship("User", back_populates="orders")
