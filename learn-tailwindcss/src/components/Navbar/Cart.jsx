@@ -21,7 +21,7 @@ const Cart2 = () => {
   const [open, setOpen] = useState(false);
 
   return (
-    <div className={`dropdown dropdown-end mr-3 ${open ? "dropdown-open" : ""}`}>
+    <div className={`dropdown dropdown-end mx-1 ${open ? "dropdown-open" : ""}`}>
       
       {/* BOTÓN */}
       <button

@@ -32,7 +32,8 @@ def login_user(data, db):
     return {
         "id": user.id,
         "email": user.email,
-        "username": user.username
+        "username": user.username,
+        "phone": user.phone
     }
 
 def register_user(data, db):

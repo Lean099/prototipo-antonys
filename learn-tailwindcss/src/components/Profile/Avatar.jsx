@@ -11,12 +11,15 @@ function getColor(name) {
   return colors[index];
 }
 
-const Avatar = ({ name }) => {
+const Avatar = ({ name, w, h, props }) => {
   const initial = name?.charAt(0).toUpperCase();
   const bgColor = getColor(name || "A");
 
   return (
-    <div className={`w-15 h-15 rounded-full ${bgColor} text-white flex items-center justify-center text-lg font-bold`}>
+    <div tabIndex={0} role="button" className={`${props} rounded-full ${bgColor} text-white flex items-center justify-center text-3xl font-bold`} style={{
+          width: `${w}px`,
+          height: `${h}px`
+        }}>
       {initial}
     </div>
   );

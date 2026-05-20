@@ -10,9 +10,15 @@ def getOneUser(idUser, db):
             status_code=404,
             detail="Usuario no encontrado"
         )
-    return user
+    return {
+        "id": user.id,
+        "username": user.username,
+        "email": user.email,
+        "role": user.role,
+        "phone": user.phone
+    }
 
-
+# Faltaria agregar para actualizar la contraseña, pero decidir si hacerlo en una funcion aparte
 def updateData(idUser, data, db):
 
     user = db.query(User).get(idUser)
@@ -56,8 +62,8 @@ def updateData(idUser, data, db):
         user.email = data.email
 
     # Actualizar teléfono solo si viene
-    if data.telefono:
-        user.telefono = data.telefono
+    if data.phone:
+        user.phone = data.phone
 
     db.commit()
     db.refresh(user)

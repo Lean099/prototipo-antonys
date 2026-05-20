@@ -1,7 +1,8 @@
 import logo1 from '../../../public/logo1-inverted.png'
 import logo2 from '../../../public/logo1.png'
-import defaultPhoto from '../../../public/default-photo.webp'
-import {TextAlignJustify, ShoppingCart} from 'lucide-react'
+import avatarWhite from '../../../public/avatar-white.svg'
+import avatarBlack from '../../../public/avatar-black.svg'
+import {TextAlignJustify, ShoppingCart, User} from 'lucide-react'
 import { useNavigate, Link } from 'react-router-dom'
 import {useState} from 'react'
 import ModalLogin from '././ModalLogin'
@@ -9,7 +10,9 @@ import ModalSignUp from '././ModalSignup'
 import ThemeToggle from './ThemeToggle'
 import { useAuthStore } from '../../store/authStore'
 import { useThemeStore } from '../../store/useThemeStore'
+import { useCartStore } from '../../store/useCartStore'
 import Cart from './Cart'
+import Avatar from "../Profile/Avatar";
 
 const Navbar = ({cart, total, removeFromCart, updateQuantity})=>{
 
@@ -19,10 +22,12 @@ const Navbar = ({cart, total, removeFromCart, updateQuantity})=>{
     const theme = useThemeStore((state) => state.theme)
     const user = useAuthStore((state)=> state.user)
     const logout = useAuthStore((state)=> state.logout)
+    const cartClear = useCartStore((state)=> state.clearCart)
     const testUser = ()=>{
       console.log(user)
     }
-    const logoutTest = ()=>{
+    const logoutUser = ()=>{
+      cartClear()
       logout()
     }
 
@@ -50,7 +55,7 @@ const Navbar = ({cart, total, removeFromCart, updateQuantity})=>{
                             <>
                               <li><Link className="flex justify-center w-full" to="/perfil">Perfil</Link></li>
                               <li><Link className="flex justify-center w-full" to="/pedidos">Pedidos</Link></li>
-                              <li><button onClick={logoutTest} className="flex justify-center w-full">Cerrar sesión</button></li>
+                              <li><button onClick={logoutUser} className="flex justify-center w-full">Cerrar sesión</button></li>
                             </>
                           )
                         }
@@ -80,7 +85,7 @@ const Navbar = ({cart, total, removeFromCart, updateQuantity})=>{
                     <>
                       <div className="flex items-center ml-2 gap-2">
                         <span className="text-sm md:text-base font-light">
-                          Hola! {user.name} 
+                          Hola! {user.username} 
                         </span>
                       </div>
                     </>
@@ -95,25 +100,28 @@ const Navbar = ({cart, total, removeFromCart, updateQuantity})=>{
                 {/* Boton de carrito 1 */}
                 {
                   user && (
-                    <div className="flex-none gap-3">
+                    <div className="flex-none">
                       
                       <Cart/>
 
                       {/* Boton de cuenta */}
                       <div className="dropdown dropdown-end">
+                        {/*<Avatar name={user?.username || "Usuario"} w={10} h={10} props={"btn btn-ghost"} />*/}
                         <div tabIndex={0} role="button" className="btn btn-ghost btn-circle avatar">
-                          <div className="w-10 rounded-full">
+                          <User />
+                          {/*<div className="w-10 rounded-full">
+                            
                             <img
                               alt="Tailwind CSS Navbar component"
-                              src={defaultPhoto} />
-                          </div>
+                              src={theme === 'cupcake' ? avatarBlack : avatarWhite} />
+                          </div>*/}
                         </div>
                         <ul
                           tabIndex="-1"
                           className="menu menu-sm dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow">
                           <li><Link to='/perfil'>Perfil</Link></li>
                           <li><Link to='/pedidos'>Pedidos</Link></li>
-                          <li><a onClick={logoutTest}>Cerrar Sesion</a></li>
+                          <li><a onClick={logoutUser}>Cerrar Sesion</a></li>
                         </ul>
                       </div>
                     </div>
