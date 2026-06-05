@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from routes import address_routes
 from config.database import engine
 from models.user_model import Base
 from routes import user_routes, auth_routes, test_routes
@@ -21,6 +22,7 @@ app.add_middleware(
 # Routers
 app.include_router(user_routes.router)
 app.include_router(auth_routes.router)
+app.include_router(address_routes.router)
 app.include_router(test_routes.router)
 
 @app.get("/")

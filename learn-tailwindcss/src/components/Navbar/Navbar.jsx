@@ -1,138 +1,157 @@
-import logo1 from '../../../public/logo1-inverted.png'
-import logo2 from '../../../public/logo1.png'
-import avatarWhite from '../../../public/avatar-white.svg'
-import avatarBlack from '../../../public/avatar-black.svg'
-import {TextAlignJustify, ShoppingCart, User} from 'lucide-react'
-import { useNavigate, Link } from 'react-router-dom'
-import {useState} from 'react'
-import ModalLogin from '././ModalLogin'
-import ModalSignUp from '././ModalSignup'
-import ThemeToggle from './ThemeToggle'
-import { useAuthStore } from '../../store/authStore'
-import { useThemeStore } from '../../store/useThemeStore'
-import { useCartStore } from '../../store/useCartStore'
-import Cart from './Cart'
-import Avatar from "../Profile/Avatar";
+import logo1 from '../../../public/logo1-inverted.png';
+import logo2 from '../../../public/logo1.png';
+import { TextAlignJustify, ShoppingCart, User } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import ModalLogin from '././ModalLogin';
+import ModalSignUp from '././ModalSignup';
+import ThemeToggle from './ThemeToggle';
+import { useAuthStore } from '../../store/authStore';
+import { useThemeStore } from '../../store/useThemeStore';
+import { useCartStore } from '../../store/useCartStore';
+import { useCheckoutStore } from '../../store/useCheckoutStore';
+import Cart from './Cart';
+import Avatar from '../Profile/Avatar';
 
-const Navbar = ({cart, total, removeFromCart, updateQuantity})=>{
+const Navbar = () => {
+  const theme = useThemeStore((state) => state.theme);
+  const user = useAuthStore((state) => state.user);
+  const logout = useAuthStore((state) => state.logout);
+  const cartClear = useCartStore((state) => state.clearCart);
+  const clearCheckout = useCheckoutStore((state) => state.clearCheckout);
 
-    const navigate = useNavigate()
-    const [open, setOpen] = useState(false)
+  const logoutUser = () => {
+    cartClear();
+    clearCheckout();
+    logout();
+  };
 
-    const theme = useThemeStore((state) => state.theme)
-    const user = useAuthStore((state)=> state.user)
-    const logout = useAuthStore((state)=> state.logout)
-    const cartClear = useCartStore((state)=> state.clearCart)
-    const testUser = ()=>{
-      console.log(user)
-    }
-    const logoutUser = ()=>{
-      cartClear()
-      logout()
-    }
-
-    return(
-            <div className="navbar sticky top-0 z-50 bg-base-100 shadow-sm w-full px-4">
-
-
-                {/* Boton que aparece en telefonos */}
-                <div className='sm:flex md:hidden lg:hidden'>
-                    <details class="dropdown ">
-                      <summary class="btn m-1"><TextAlignJustify /></summary>
-                      <ul class="menu dropdown-content bg-base-100 rounded-box z-1 w-45 p-2 shadow-sm">
-                        <li><Link className="flex justify-center w-full" to="/">Inicio</Link></li>
-                        <li><Link className="flex justify-center w-full" to="/#menu">Menu</Link></li>
-                        <li className='mb-2'><Link className="flex justify-center w-full" to="/contacto">Contacto</Link></li>
-                        {!user && (
-                          <>
-                            <ModalLogin id="my_modal_1"/>
-                            <div className='my-1'></div>
-                            <ModalSignUp id="my_modal_2"/>
-                          </>
-                        )}
-                        {
-                          user && (
-                            <>
-                              <li><Link className="flex justify-center w-full" to="/perfil">Perfil</Link></li>
-                              <li><Link className="flex justify-center w-full" to="/pedidos">Pedidos</Link></li>
-                              <li><button onClick={logoutUser} className="flex justify-center w-full">Cerrar sesión</button></li>
-                            </>
-                          )
-                        }
-                      </ul>
-                  </details>
-                </div>
-
-                {/* Logo */}
-                <div className="flex-1">
-                  <Link to="/" className="btn btn-ghost text-xl">
-                    <img src={theme === 'cupcake' ? logo2 : logo1} className='w-20 h-20 object-contain' alt="" srcset="" />
+  return (
+    <div className="navbar sticky top-0 z-50 bg-base-100 shadow-sm w-full px-4">
+      {/* Boton que aparece en telefonos */}
+      <div className="sm:flex md:hidden lg:hidden">
+        <details class="dropdown ">
+          <summary class="btn m-1">
+            <TextAlignJustify />
+          </summary>
+          <ul class="menu dropdown-content bg-base-100 rounded-box z-1 w-45 p-2 shadow-sm">
+            <li>
+              <Link className="flex justify-center w-full" to="/">
+                Inicio
+              </Link>
+            </li>
+            <li>
+              <Link className="flex justify-center w-full" to="/#menu">
+                Menu
+              </Link>
+            </li>
+            <li className="mb-2">
+              <Link className="flex justify-center w-full" to="/contacto">
+                Contacto
+              </Link>
+            </li>
+            {!user && (
+              <>
+                <ModalLogin id="my_modal_1" />
+                <div className="my-1"></div>
+                <ModalSignUp id="my_modal_2" />
+              </>
+            )}
+            {user && (
+              <>
+                <li>
+                  <Link className="flex justify-center w-full" to="/perfil">
+                    Perfil
                   </Link>
-                  
-                </div>
+                </li>
+                <li>
+                  <Link className="flex justify-center w-full" to="/pedidos">
+                    Pedidos
+                  </Link>
+                </li>
+                <li>
+                  <button onClick={logoutUser} className="flex justify-center w-full">
+                    Cerrar sesión
+                  </button>
+                </li>
+              </>
+            )}
+          </ul>
+        </details>
+      </div>
 
-                {/* Botones para las pantallas mas grandes */}
-                <div className="hidden md:flex gap-2 mr-3">
-                  <Link to="/" className="btn btn-sm btn-primary border-none">Inicio</Link>
-                  <Link to="/#menu" className="btn btn-sm btn-primary border-none">Menu</Link>
-                  <Link to="/contacto" className="btn btn-sm btn-primary border-none">Contacto</Link>
-                  { !user ?  (
-                    <>
-                      <ModalLogin id="my_modal_3"/>
-                      <ModalSignUp id="my_modal_4"/>
-                    </>
-                  ): (
-                    <>
-                      <div className="flex items-center ml-2 gap-2">
-                        <span className="text-sm md:text-base font-light">
-                          Hola! {user.username} 
-                        </span>
-                      </div>
-                    </>
-                  ) }
-                </div>
+      {/* Logo */}
+      <div className="flex-1">
+        <Link to="/" className="btn btn-ghost text-xl">
+          <img src={theme === 'cupcake' ? logo2 : logo1} className="w-20 h-20 object-contain" alt="" srcset="" />
+        </Link>
+      </div>
 
-                <div>
-                  <ThemeToggle/>
-                </div>
+      {/* Botones para las pantallas mas grandes */}
+      <div className="hidden md:flex gap-2 mr-3">
+        <Link to="/" className="btn btn-sm btn-primary border-none">
+          Inicio
+        </Link>
+        <Link to="/#menu" className="btn btn-sm btn-primary border-none">
+          Menu
+        </Link>
+        <Link to="/contacto" className="btn btn-sm btn-primary border-none">
+          Contacto
+        </Link>
+        {!user ? (
+          <>
+            <ModalLogin id="my_modal_3" />
+            <ModalSignUp id="my_modal_4" />
+          </>
+        ) : (
+          <>
+            <div className="flex items-center ml-2 gap-2">
+              <span className="text-sm md:text-base font-light">Hola! {user.username}</span>
+            </div>
+          </>
+        )}
+      </div>
 
-                {/* Derecha */}
-                {/* Boton de carrito 1 */}
-                {
-                  user && (
-                    <div className="flex-none">
-                      
-                      <Cart/>
+      <div>
+        <ThemeToggle />
+      </div>
 
-                      {/* Boton de cuenta */}
-                      <div className="dropdown dropdown-end">
-                        {/*<Avatar name={user?.username || "Usuario"} w={10} h={10} props={"btn btn-ghost"} />*/}
-                        <div tabIndex={0} role="button" className="btn btn-ghost btn-circle avatar">
-                          <User />
-                          {/*<div className="w-10 rounded-full">
+      {/* Derecha */}
+      {/* Boton de carrito 1 */}
+      {user && (
+        <div className="flex-none">
+          <Cart />
+
+          {/* Boton de cuenta */}
+          <div className="dropdown dropdown-end">
+            {/*<Avatar name={user?.username || "Usuario"} w={10} h={10} props={"btn btn-ghost"} />*/}
+            <div tabIndex={0} role="button" className="btn btn-ghost btn-circle avatar">
+              <User />
+              {/*<div className="w-10 rounded-full">
                             
                             <img
                               alt="Tailwind CSS Navbar component"
                               src={theme === 'cupcake' ? avatarBlack : avatarWhite} />
                           </div>*/}
-                        </div>
-                        <ul
-                          tabIndex="-1"
-                          className="menu menu-sm dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow">
-                          <li><Link to='/perfil'>Perfil</Link></li>
-                          <li><Link to='/pedidos'>Pedidos</Link></li>
-                          <li><a onClick={logoutUser}>Cerrar Sesion</a></li>
-                        </ul>
-                      </div>
-                    </div>
-                  )
-                }
-                
-
             </div>
-
-            
-    )
-}
+            <ul
+              tabIndex="-1"
+              className="menu menu-sm dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow"
+            >
+              <li>
+                <Link to="/perfil">Perfil</Link>
+              </li>
+              <li>
+                <Link to="/pedidos">Pedidos</Link>
+              </li>
+              <li>
+                <a onClick={logoutUser}>Cerrar Sesion</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
 
 export default Navbar;

@@ -4,7 +4,7 @@ from models.user_model import User
 from models.address_model import Address
 
 def createAddress(idUser, data, db):
-
+    print(data)
     try:
         user = db.query(User).get(idUser)
 
@@ -37,7 +37,23 @@ def createAddress(idUser, data, db):
             newAddress.longitude = data.longitude
 
         if data.is_default is not None:
+            
+            if data.is_default:
+                # Si se marca como predeterminada, desmarcar otras
+                (
+                    db.query(Address)
+                    .filter(
+                        Address.user_id == idUser,
+                        Address.is_default == True
+                    )
+                    .update(
+                        {"is_default": False},
+                        synchronize_session=False
+                    )
+                )
             newAddress.is_default = data.is_default
+
+        newAddress.user_id = idUser
 
         db.add(newAddress)
         db.commit()
@@ -49,6 +65,7 @@ def createAddress(idUser, data, db):
         }
 
     except SQLAlchemyError:
+        db.rollback()
         raise HTTPException(
             status_code=500,
             detail="Error al crear la direccion"
@@ -124,6 +141,21 @@ def updateAddress(idUser, idAddress, data, db):
             address.longitude = data.longitude
 
         if data.is_default is not None:
+            
+            if data.is_default:
+                # Si se marca como predeterminada, desmarcar otras
+                (
+                    db.query(Address)
+                    .filter(
+                        Address.user_id == idUser,
+                        Address.id != idAddress,
+                        Address.is_default == True
+                    )
+                    .update(
+                        {"is_default": False},
+                        synchronize_session=False
+                    )
+                )
             address.is_default = data.is_default
 
         # Guardar cambios
@@ -146,14 +178,21 @@ def updateAddress(idUser, idAddress, data, db):
         )
     
 def deleteAddress(idAddress, db):
-    address = db.query(Address).get(idAddress)
-    if not address:
+    try:
+        address = db.query(Address).get(idAddress)
+        if not address:
+            raise HTTPException(
+                status_code=404,
+                detail="Direccion no encontrada"
+            )
+        db.delete(address)
+        db.commit()
+        return {
+            "details": "Direccion eliminada correctamente"
+        }
+    except SQLAlchemyError:
+        db.rollback()
         raise HTTPException(
-            status_code=404,
-            detail="Direccion no encontrada"
+            status_code=500,
+            detail="Error al eliminar la direccion"
         )
-    db.delete(address)
-    db.commit()
-    return {
-        "details": "Direccion eliminada correctamente"
-    }

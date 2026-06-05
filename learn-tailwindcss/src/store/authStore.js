@@ -1,5 +1,5 @@
-import { create } from "zustand";
-import { persist } from "zustand/middleware";
+import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
 
 export const useAuthStore = create(
   persist(
@@ -8,10 +8,10 @@ export const useAuthStore = create(
 
       login: (userData) => set({ user: userData }),
 
-      logout: () => set({ user: null })
+      logout: () => set({ user: null }),
     }),
     {
-      name: "auth-storage"
-    }
-  )
+      name: 'auth-storage',
+    },
+  ),
 );

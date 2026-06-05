@@ -1,26 +1,53 @@
-import { create } from 'zustand'
+import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
 
-export const useCheckoutStore = create((set) => ({
-  deliveryOption: null, // 'pickup' | 'delivery'
-  addresses: [
-    { id: 1, street: "Av. Siempre Viva 742", obs: "Casa con rejas blancas", city: "Springfield" }
-  ],
-  selectedAddressId: 1,
+export const useCheckoutStore = create(
+  persist(
+    (set) => ({
+      deliveryOption: null,
+      addresses: [],
+      selectedAddressId: null,
+      paymentMethodsOption: null,
 
-  // Acciones
-  setDeliveryOption: (option) => set({ deliveryOption: option }),
-  setSelectedAddress: (id) => set({ selectedAddressId: id }),
-  addAddress: (newAddr) => set((state) => {
-    const newId = Date.now();
-    return {
-      addresses: [...state.addresses, { ...newAddr, id: newId }],
-      selectedAddressId: newId
-    };
-  }),
+      // acciones
+      setDeliveryOption: (option) => set({ deliveryOption: option }),
 
-  // Metodos de pago
+      setSelectedAddress: (id) => set({ selectedAddressId: id }),
 
-  paymentMethodsOption: null, // debito | transferencia | efectivo
-  setPMSelected: (method) => set({paymentMethodsOption: method}),
+      /*addAddress: (newAddr) =>
+        set((state) => ({
+          addresses: [...state.addresses, newAddr],
+          selectedAddressId: newAddr.is_default ? newAddr.id : state.selectedAddressId,
+        })),*/
 
-}));
+      setAddresses: (addresses) =>
+        set({
+          addresses,
+          //selectedAddressId: addresses.find((a) => a.is_default)?.id ?? null,
+        }),
+
+      removeAddress: (id) =>
+        set((state) => {
+          const updatedAddresses = state.addresses.filter((addr) => addr.id !== id);
+
+          return {
+            addresses: updatedAddresses,
+            selectedAddressId: state.selectedAddressId === id ? null : state.selectedAddressId,
+          };
+        }),
+
+      setPMSelected: (method) => set({ paymentMethodsOption: method }),
+
+      clearCheckout: () =>
+        set({
+          deliveryOption: null,
+          addresses: [],
+          selectedAddressId: null,
+          paymentMethodsOption: null,
+        }),
+    }),
+    {
+      name: 'checkout-storage',
+    },
+  ),
+);
