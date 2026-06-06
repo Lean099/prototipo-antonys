@@ -2,8 +2,9 @@ import axios from 'axios';
 import { useState } from 'react';
 import { useAuthStore } from '../../store/authStore';
 import { useCheckoutStore } from '../../store/useCheckoutStore';
+import { useModalStore } from '../../store/useModalStore';
 
-const ModalLogin = ({ id }) => {
+const ModalLogin = () => {
   const API_URL = import.meta.env.VITE_API_URL;
   const [formData, setFormDataLogin] = useState({
     identifier: '',
@@ -14,6 +15,9 @@ const ModalLogin = ({ id }) => {
 
   const login = useAuthStore((state) => state.login);
   const setAddresses = useCheckoutStore((state) => state.setAddresses);
+  const activeModal = useModalStore((state) => state.activeModal);
+  const closeModal = useModalStore((state) => state.closeModal);
+  const openModal = useModalStore((state) => state.openModal);
 
   const handleChangeLogin = (e) => {
     const { name, value } = e.target;
@@ -22,6 +26,14 @@ const ModalLogin = ({ id }) => {
       ...prev,
       [name]: value,
     }));
+  };
+
+  const closeAndClear = () => {
+    setFormDataLogin({
+      identifier: '',
+      password: '',
+    });
+    closeModal();
   };
 
   const sendDataLogin = async (e) => {
@@ -38,6 +50,7 @@ const ModalLogin = ({ id }) => {
         setAddresses(res.data);
         console.log(useCheckoutStore.getState().addresses); // Verificar el estado actualizado de direcciones
       }
+      closeAndClear();
     } catch (error) {
       console.log('Hubo un error al loguearse', error);
     }
@@ -45,15 +58,17 @@ const ModalLogin = ({ id }) => {
 
   return (
     <>
-      <button onClick={() => document.getElementById(id).showModal()} className="btn btn-sm btn-primary border-none">
-        Iniciar Sesión
-      </button>
-
-      <dialog id={id} className="modal modal-bottom sm:modal-middle">
+      <dialog className={`modal ${activeModal === 'login' ? 'modal-open' : ''}`}>
         <div className="modal-box max-w-md">
           {/* botón cerrar */}
           <form method="dialog">
-            <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+            <button
+              type="button"
+              onClick={() => closeAndClear()}
+              className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2"
+            >
+              ✕
+            </button>
           </form>
 
           <h3 className="font-bold text-xl text-center mb-6">Iniciar sesión</h3>
@@ -103,18 +118,28 @@ const ModalLogin = ({ id }) => {
             {/* BOTÓN */}
             <button className="btn btn-primary w-full mt-2">Iniciar sesión</button>
           </form>
+          <div className="text-center mt-4">
+            <span className="text-sm">¿No tenés cuenta?</span>
+            <button type="button" className="btn btn-link btn-sm text-base-content" onClick={() => openModal('signup')}>
+              Registrate
+            </button>
+          </div>
 
           {/* FOOTER */}
           <div className="modal-action">
             <form method="dialog">
-              <button className="btn">Cerrar</button>
+              <button type="button" onClick={() => closeAndClear()} className="btn">
+                Cerrar
+              </button>
             </form>
           </div>
         </div>
 
         {/* click afuera */}
         <form method="dialog" className="modal-backdrop">
-          <button>close</button>
+          <button type="button" onClick={() => closeAndClear()}>
+            close
+          </button>
         </form>
       </dialog>
     </>

@@ -9,6 +9,7 @@ import { useAuthStore } from '../../store/authStore';
 import { useThemeStore } from '../../store/useThemeStore';
 import { useCartStore } from '../../store/useCartStore';
 import { useCheckoutStore } from '../../store/useCheckoutStore';
+import { useModalStore } from '../../store/useModalStore';
 import Cart from './Cart';
 import Avatar from '../Profile/Avatar';
 
@@ -18,6 +19,7 @@ const Navbar = () => {
   const logout = useAuthStore((state) => state.logout);
   const cartClear = useCartStore((state) => state.clearCart);
   const clearCheckout = useCheckoutStore((state) => state.clearCheckout);
+  const openModal = useModalStore((state) => state.openModal);
 
   const logoutUser = () => {
     cartClear();
@@ -51,9 +53,13 @@ const Navbar = () => {
             </li>
             {!user && (
               <>
-                <ModalLogin id="my_modal_1" />
+                <button onClick={() => openModal('login')} className="btn btn-sm btn-primary border-none">
+                  Iniciar Sesión
+                </button>
                 <div className="my-1"></div>
-                <ModalSignUp id="my_modal_2" />
+                <button onClick={() => openModal('signup')} className="btn btn-sm btn-primary border-none">
+                  Registrarse
+                </button>
               </>
             )}
             {user && (
@@ -99,8 +105,12 @@ const Navbar = () => {
         </Link>
         {!user ? (
           <>
-            <ModalLogin id="my_modal_3" />
-            <ModalSignUp id="my_modal_4" />
+            <button onClick={() => openModal('login')} className="btn btn-sm btn-primary border-none">
+              Iniciar Sesión
+            </button>
+            <button onClick={() => openModal('signup')} className="btn btn-sm btn-primary border-none">
+              Registrarse
+            </button>
           </>
         ) : (
           <>
@@ -113,14 +123,13 @@ const Navbar = () => {
 
       <div>
         <ThemeToggle />
+        <Cart />
       </div>
 
       {/* Derecha */}
       {/* Boton de carrito 1 */}
       {user && (
         <div className="flex-none">
-          <Cart />
-
           {/* Boton de cuenta */}
           <div className="dropdown dropdown-end">
             {/*<Avatar name={user?.username || "Usuario"} w={10} h={10} props={"btn btn-ghost"} />*/}

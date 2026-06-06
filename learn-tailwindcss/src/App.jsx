@@ -1,26 +1,28 @@
-import { useState, useEffect } from 'react'
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import './App.css'
-import { useThemeStore } from "./store/useThemeStore";
+import { useState, useEffect } from 'react';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import './App.css';
+import { useThemeStore } from './store/useThemeStore';
 import { useBackendStatusStore } from './store/useBackendStatusStore';
-import Navbar from './components/Navbar/Navbar'
-import Home from './components/Home/Home'
-import Checkout from './components/Checkout/Checkout'
+import Navbar from './components/Navbar/Navbar';
+import Home from './components/Home/Home';
+import Checkout from './components/Checkout/Checkout';
 import Contact from './components/Contact';
 import Profile from './components/Profile/Profile';
 import Orders from './components/Orders';
 import Footer from './components/Footer';
 import ScrollToTop from './components/ScrollToTop';
 import BackendAlert from './components/BackendAlert';
+import ProtectedRoute from './routes/ProtectedRoutes';
+import ModalLogin from './components/Navbar/ModalLogin';
+import ModalSignUp from './components/Navbar/ModalSignup';
 
 function App() {
-
   const theme = useThemeStore((state) => state.theme);
-  const { setStatus } = useBackendStatusStore()
-  const API_URL = import.meta.env.VITE_API_URL
+  const { setStatus } = useBackendStatusStore();
+  const API_URL = import.meta.env.VITE_API_URL;
 
   useEffect(() => {
-    document.documentElement.setAttribute("data-theme", theme);
+    document.documentElement.setAttribute('data-theme', theme);
   }, [theme]);
 
   // Backend monitor
@@ -64,21 +66,36 @@ function App() {
   }, [])*/
 
   return (
-        <BrowserRouter>
-          {/*<BackendAlert/>*/}
-          <Navbar/>
-          <Routes>
-            <Route path="/" element={<Home/>}/>
-            <Route path="/checkout" element={<Checkout/>}/>
-            <Route path='/contacto' element={<Contact/>}/>
-            <Route path='/perfil' element={<Profile/>}/>
-            <Route path='/pedidos' element={<Orders/>}/>
-          </Routes>
-          <Footer/>
-          <ScrollToTop/>
-        </BrowserRouter>
-        
-  )
+    <BrowserRouter>
+      {/*<BackendAlert/>*/}
+      <Navbar />
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/checkout" element={<Checkout />} />
+        <Route path="/contacto" element={<Contact />} />
+        <Route
+          path="/perfil"
+          element={
+            <ProtectedRoute>
+              <Profile />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/pedidos"
+          element={
+            <ProtectedRoute>
+              <Orders />
+            </ProtectedRoute>
+          }
+        />
+      </Routes>
+      <Footer />
+      <ModalLogin />
+      <ModalSignUp />
+      <ScrollToTop />
+    </BrowserRouter>
+  );
 }
 
-export default App
+export default App;

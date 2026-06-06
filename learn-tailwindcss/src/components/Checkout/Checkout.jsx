@@ -1,14 +1,33 @@
 import ShippingSelector from './ShippingSelector';
 import PaymentMethods from './PaymentMethods';
-import { useCartStore } from "../../store/useCartStore";
-import { useCheckoutStore } from "../../store/useCheckoutStore";
+import { useCartStore } from '../../store/useCartStore';
+import { useCheckoutStore } from '../../store/useCheckoutStore';
+import { useModalStore } from '../../store/useModalStore';
+import { useAuthStore } from '../../store/authStore';
+import { useEffect } from 'react';
 
 const Checkout = () => {
   // Consumimos el store del Carrito
   const { cart, getTotal } = useCartStore();
-  
+
   // Consumimos el store de Envío
-  const deliveryOption = useCheckoutStore(state => state.deliveryOption);
+  const deliveryOption = useCheckoutStore((state) => state.deliveryOption);
+  const user = useAuthStore((state) => state.user);
+  const openModal = useModalStore((state) => state.openModal);
+
+  useEffect(() => {
+    if (!user) {
+      openModal('login');
+    }
+  }, [user, openModal]);
+
+  if (!user) {
+    return (
+      <div className="flex justify-center items-center h-[60vh]">
+        <span className="loading loading-spinner loading-lg"></span>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-3xl mx-auto p-4 mb-20">
@@ -17,17 +36,13 @@ const Checkout = () => {
       {/* RESUMEN DE PRODUCTOS CON IMÁGENES */}
       <div className="bg-base-200 p-5 rounded-xl mb-8 shadow-inner">
         <h2 className="font-bold mb-4 text-lg">Tu pedido</h2>
-        
-        {cart.map(item => (
+
+        {cart.map((item) => (
           <div key={item.id} className="flex justify-between items-center mb-4 last:mb-0">
-            <div className='flex items-center gap-4'>
+            <div className="flex items-center gap-4">
               {/* Restauramos la imagen aquí */}
               <figure className="h-20 w-24 overflow-hidden flex-shrink-0">
-                <img
-                  className="w-full h-full object-cover rounded-lg shadow-sm"
-                  src={item.image}
-                  alt={item.title} 
-                />
+                <img className="w-full h-full object-cover rounded-lg shadow-sm" src={item.image} alt={item.title} />
               </figure>
               <div className="flex flex-col">
                 <span className="font-medium text-sm md:text-base">{item.title}</span>
@@ -45,10 +60,9 @@ const Checkout = () => {
           <span className="">${getTotal().toLocaleString()}</span>
         </div>
       </div>
-      {
-        cart.length > 0 && 
+      {cart.length > 0 && (
         <>
-        {/* COMPONENTE DE SELECCIÓN DE ENVÍO */}
+          {/* COMPONENTE DE SELECCIÓN DE ENVÍO */}
           <ShippingSelector />
 
           {/* MÉTODOS DE PAGO */}
@@ -60,8 +74,7 @@ const Checkout = () => {
             </div>
           )}
         </>
-      }
-      
+      )}
     </div>
   );
 };
