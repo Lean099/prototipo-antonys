@@ -74,6 +74,8 @@ const useAddressForm = (initialData = {}) => {
   return {
     formData,
 
+    initialFormData,
+
     setFormData,
 
     handleChange,

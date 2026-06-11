@@ -15,6 +15,7 @@ import BackendAlert from './components/BackendAlert';
 import ProtectedRoute from './routes/ProtectedRoutes';
 import ModalLogin from './components/Navbar/ModalLogin';
 import ModalSignUp from './components/Navbar/ModalSignup';
+import DeleteAddressModal from './components/Profile/DeleteAddressModal';
 
 function App() {
   const theme = useThemeStore((state) => state.theme);
@@ -93,6 +94,7 @@ function App() {
       <Footer />
       <ModalLogin />
       <ModalSignUp />
+      <DeleteAddressModal />
       <ScrollToTop />
     </BrowserRouter>
   );

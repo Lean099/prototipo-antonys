@@ -1,4 +1,8 @@
+import { useModalStore } from '../../store/useModalStore';
+
 const AddressCard = ({ address, onEdit, onDelete }) => {
+  const openModal = useModalStore((state) => state.openModal);
+
   return (
     <div className="card bg-base-100 border border-base-300">
       <div className="card-body p-4">
@@ -46,7 +50,16 @@ const AddressCard = ({ address, onEdit, onDelete }) => {
                 btn-error
                 btn-outline
               "
-              onClick={() => onDelete(address.id)}
+              onClick={() =>
+                openModal('deleteAddress', {
+                  title: 'Eliminar dirección',
+                  message: '¿Estás seguro que deseas eliminar esta dirección?',
+                  confirmText: 'Eliminar',
+                  address,
+                  onConfirm: onDelete,
+                })
+              }
+              //onClick={() => onDelete(address.id)}
             >
               Eliminar
             </button>

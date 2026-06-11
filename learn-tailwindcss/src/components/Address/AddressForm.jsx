@@ -5,7 +5,7 @@ import useAddressForm from '../../hook/useAddressForm';
 const AddressForm = ({ initialData = {}, showDefault = true, submitLabel = 'Guardar', onSubmit, onCancel }) => {
   const { theme } = useThemeStore();
 
-  const { formData, handleChange, handleGetLocation } = useAddressForm(initialData);
+  const { formData, initialFormData, setFormData, handleChange, handleGetLocation } = useAddressForm(initialData);
 
   // SUBMIT
   const handleSubmit = (e) => {
@@ -18,8 +18,8 @@ const AddressForm = ({ initialData = {}, showDefault = true, submitLabel = 'Guar
     }
 
     onSubmit?.(formData);
+    setFormData(initialFormData);
   };
-  console.log(formData);
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">

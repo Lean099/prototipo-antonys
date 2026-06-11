@@ -82,7 +82,7 @@ def deleteUser(idUser, db):
             detail="Usuario no encontrado"
         )
 
-    # Faltaria agregar logica para que elimine tambien todas las direcciones y pedidos relacionados a este usuario
+    # No hace falta eliminar las direcciones asociadas, ya que se eliminarán automáticamente por la relación de cascada definida en el modelo
     db.delete(user)
     db.commit()
 

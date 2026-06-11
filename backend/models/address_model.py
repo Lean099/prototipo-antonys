@@ -27,7 +27,7 @@ class Address(Base):
 
     # Relación con usuario
     user_id = Column(
-        Integer,
+        String,
         ForeignKey("users.id", ondelete="CASCADE"),
         nullable=False
     )

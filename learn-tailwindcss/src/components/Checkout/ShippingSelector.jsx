@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { MapPin, Store, Plus, CheckCircle2 } from 'lucide-react';
 import axios from 'axios';
 import { useAuthStore } from '../../store/authStore';
@@ -27,6 +27,8 @@ const ShippingSelector = () => {
   const { theme } = useThemeStore();
 
   const [showForm, setShowForm] = useState(false);
+
+  const formAnchorRef = useRef(null);
 
   // SAVE
 
@@ -65,6 +67,21 @@ const ShippingSelector = () => {
 
     setShowForm(false);
   };
+
+  useEffect(() => {
+    if (!showForm) return;
+
+    const element = formAnchorRef.current;
+
+    if (!element) return;
+
+    const y = element.getBoundingClientRect().top + window.scrollY - 80;
+
+    window.scrollTo({
+      top: y,
+      behavior: 'smooth',
+    });
+  }, [showForm]);
 
   return (
     <section className="mb-8">
@@ -218,11 +235,30 @@ const ShippingSelector = () => {
 
           {/* LIST */}
 
-          {addresses.map((addr) => (
-            <div
-              key={addr.id}
-              onClick={() => setSelectedAddress(addr.id)}
-              className={`
+          {addresses.length > 3 && (
+            <p className="text-xs opacity-60 mb-2">Mostrando las primeras direcciones. Deslizá para ver más.</p>
+          )}
+
+          <div
+            className={`
+              space-y-3
+              ${
+                addresses.length > 3
+                  ? `
+                    max-h-64
+                    md:max-h-80
+                    overflow-y-auto
+                    pr-2
+                  `
+                  : ''
+              }
+            `}
+          >
+            {addresses.map((addr) => (
+              <div
+                key={addr.id}
+                onClick={() => setSelectedAddress(addr.id)}
+                className={`
                 relative
                 p-4
                 border
@@ -245,49 +281,50 @@ const ShippingSelector = () => {
                       `
                 }
               `}
-            >
-              <div className="mt-1">
-                {selectedAddressId === addr.id ? (
-                  <CheckCircle2 size={20} />
-                ) : (
-                  <div
-                    className="
+              >
+                <div className="mt-1">
+                  {selectedAddressId === addr.id ? (
+                    <CheckCircle2 size={20} />
+                  ) : (
+                    <div
+                      className="
                         w-5
                         h-5
                         rounded-full
                         border-2
                       "
-                  />
-                )}
-              </div>
+                    />
+                  )}
+                </div>
 
-              <div
-                className="
+                <div
+                  className="
                   flex-1
                 "
-              >
-                <p
-                  className="
+                >
+                  <p
+                    className="
                     font-semibold
                     text-sm
                   "
-                >
-                  {addr.label || 'Dirección'}
-                  {' · '}
-                  {addr.street} {addr.street_number}
-                </p>
+                  >
+                    {addr.label || 'Dirección'}
+                    {' · '}
+                    {addr.street} {addr.street_number}
+                  </p>
 
-                <p
-                  className="
+                  <p
+                    className="
                     text-xs
                     opacity-60
                   "
-                >
-                  {addr.details || 'Sin notas'}
-                </p>
+                  >
+                    {addr.details || 'Sin notas'}
+                  </p>
+                </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
 
           {/* FORM */}
 
@@ -308,6 +345,7 @@ const ShippingSelector = () => {
             </button>
           ) : (
             <div
+              ref={formAnchorRef}
               className="
                 bg-base-100
                 rounded-xl
@@ -318,6 +356,7 @@ const ShippingSelector = () => {
               "
             >
               <AddressForm
+                autofocus
                 showDefault={false}
                 submitLabel="
                   Guardar y usar

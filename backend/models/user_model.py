@@ -54,4 +54,8 @@ class User(Base):
         onupdate=func.now()
     )
 
-    addresses = relationship("Address", back_populates="user")
+    addresses = relationship(
+    "Address",
+    back_populates="user",
+    cascade="all, delete-orphan"
+)
