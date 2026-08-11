@@ -2,7 +2,8 @@ from sqlalchemy import (
     Boolean,
     Column,
     DateTime,
-    String
+    String,
+    Text
 )
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
@@ -11,8 +12,8 @@ from config.database import Base
 from utils.idGenerator import generate_uuid
 
 
-class User(Base):
-    __tablename__ = "users"
+class Category(Base):
+    __tablename__ = "categories"
 
     id = Column(
         String,
@@ -21,46 +22,21 @@ class User(Base):
         default=generate_uuid
     )
 
-    username = Column(
-        String(30),
-        unique=True,
-        nullable=False,
-        index=True
-    )
-
-    email = Column(
+    name = Column(
         String(100),
-        unique=True,
         nullable=False,
-        index=True
+        unique=True
     )
 
-    password = Column(
-        String,
-        nullable=False
-    )
-
-    phone = Column(
-        String(20),
+    description = Column(
+        Text,
         nullable=True
-    )
-
-    # customer | employee | admin
-    role = Column(
-        String(20),
-        nullable=False,
-        default="customer"
     )
 
     is_active = Column(
         Boolean,
         nullable=False,
         default=True
-    )
-
-    deleted_at = Column(
-        DateTime(timezone=True),
-        nullable=True
     )
 
     created_at = Column(
@@ -76,13 +52,7 @@ class User(Base):
 
     # Relaciones
 
-    addresses = relationship(
-        "Address",
-        back_populates="user",
-        cascade="all, delete-orphan"
-    )
-
-    orders = relationship(
-        "Order",
-        back_populates="user"
+    products = relationship(
+        "Product",
+        back_populates="category"
     )

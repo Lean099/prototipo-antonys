@@ -8,6 +8,7 @@ export const useCheckoutStore = create(
       addresses: [],
       selectedAddressId: null,
       paymentMethodsOption: null,
+      orderNotes: [],
 
       // acciones
       setDeliveryOption: (option) => set({ deliveryOption: option }),
@@ -38,12 +39,28 @@ export const useCheckoutStore = create(
 
       setPMSelected: (method) => set({ paymentMethodsOption: method }),
 
+      addOrderNote: (note) =>
+        set((state) => ({
+          orderNotes: [...state.orderNotes, note],
+        })),
+
+      removeOrderNote: (index) =>
+        set((state) => ({
+          orderNotes: state.orderNotes.filter((_, i) => i !== index),
+        })),
+
+      clearOrderNotes: () =>
+        set({
+          orderNotes: [],
+        }),
+
       clearCheckout: () =>
         set({
           deliveryOption: null,
           addresses: [],
           selectedAddressId: null,
           paymentMethodsOption: null,
+          orderNotes: [],
         }),
     }),
     {

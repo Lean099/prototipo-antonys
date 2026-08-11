@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import './App.css';
 import { useThemeStore } from './store/useThemeStore';
@@ -10,16 +10,19 @@ import Contact from './components/Contact';
 import Profile from './components/Profile/Profile';
 import Orders from './components/Orders';
 import Footer from './components/Footer';
+import ProtectedRoute from './routes/ProtectedRoutes';
 import ScrollToTop from './components/ScrollToTop';
 import BackendAlert from './components/BackendAlert';
-import ProtectedRoute from './routes/ProtectedRoutes';
 import ModalLogin from './components/Navbar/ModalLogin';
 import ModalSignUp from './components/Navbar/ModalSignup';
 import DeleteAddressModal from './components/Profile/DeleteAddressModal';
+import AppContent from './components/AppContent.jsx';
+
+// PROBANDO RCLONE
 
 function App() {
   const theme = useThemeStore((state) => state.theme);
-  const { setStatus } = useBackendStatusStore();
+  //const { setStatus } = useBackendStatusStore();  BACKEND MONITOR
   const API_URL = import.meta.env.VITE_API_URL;
 
   useEffect(() => {
@@ -69,29 +72,7 @@ function App() {
   return (
     <BrowserRouter>
       {/*<BackendAlert/>*/}
-      <Navbar />
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/checkout" element={<Checkout />} />
-        <Route path="/contacto" element={<Contact />} />
-        <Route
-          path="/perfil"
-          element={
-            <ProtectedRoute>
-              <Profile />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/pedidos"
-          element={
-            <ProtectedRoute>
-              <Orders />
-            </ProtectedRoute>
-          }
-        />
-      </Routes>
-      <Footer />
+      <AppContent />
       <ModalLogin />
       <ModalSignUp />
       <DeleteAddressModal />

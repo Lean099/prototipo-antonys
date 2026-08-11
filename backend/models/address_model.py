@@ -4,54 +4,74 @@ from sqlalchemy import (
     DateTime,
     Float,
     ForeignKey,
-    Integer,
     String,
-    Text,
-    func
+    Text
 )
-
 from sqlalchemy.orm import relationship
-from utils.idGenerator import generate_uuid
+from sqlalchemy.sql import func
+
 from config.database import Base
+from utils.idGenerator import generate_uuid
 
 
 class Address(Base):
     __tablename__ = "addresses"
 
     id = Column(
-    String,
-    primary_key=True,
-    index=True,
-    default=generate_uuid
+        String,
+        primary_key=True,
+        index=True,
+        default=generate_uuid
     )
 
-    # Relación con usuario
     user_id = Column(
         String,
         ForeignKey("users.id", ondelete="CASCADE"),
         nullable=False
     )
 
-    # Ejemplo:
-    # Casa, Trabajo, Novia, etc
-    label = Column(String(50), nullable=False)
+    # Casa, Trabajo, Novia, etc.
+    label = Column(
+        String(50),
+        nullable=False
+    )
 
-    # Dirección
-    street = Column(String(120), nullable=False)
-    street_number = Column(String(20), nullable=False)
+    street = Column(
+        String(120),
+        nullable=False
+    )
 
-    # Referencias para delivery
-    details = Column(Text, nullable=True)
+    street_number = Column(
+        String(20),
+        nullable=False
+    )
 
-    # Barrio
-    neighborhood = Column(String(100), nullable=True)
+    # Referencias para el delivery
+    details = Column(
+        Text,
+        nullable=True
+    )
 
-    # Geolocalización
-    latitude = Column(Float, nullable=True)
-    longitude = Column(Float, nullable=True)
+    neighborhood = Column(
+        String(100),
+        nullable=True
+    )
 
-    # Dirección principal
-    is_default = Column(Boolean, default=False)
+    latitude = Column(
+        Float,
+        nullable=True
+    )
+
+    longitude = Column(
+        Float,
+        nullable=True
+    )
+
+    is_default = Column(
+        Boolean,
+        nullable=False,
+        default=False
+    )
 
     created_at = Column(
         DateTime(timezone=True),
@@ -64,5 +84,14 @@ class Address(Base):
         onupdate=func.now()
     )
 
-    # Relación ORM
-    user = relationship("User", back_populates="addresses")
+    # Relaciones
+
+    user = relationship(
+        "User",
+        back_populates="addresses"
+    )
+
+    orders = relationship(
+        "Order",
+        back_populates="address"
+    )

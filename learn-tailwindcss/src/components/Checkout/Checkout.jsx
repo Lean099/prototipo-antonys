@@ -1,4 +1,5 @@
 import ShippingSelector from './ShippingSelector';
+import OrderNotes from './OrderNotes';
 import PaymentMethods from './PaymentMethods';
 import { useCartStore } from '../../store/useCartStore';
 import { useCheckoutStore } from '../../store/useCheckoutStore';
@@ -21,6 +22,11 @@ const Checkout = () => {
     }
   }, [user, openModal]);
 
+  const orderNotes = useCheckoutStore((state) => state.orderNotes);
+  const notesString = orderNotes.map((item) => `${item.productName} - ${item.note}`).join('\n');
+
+  console.log(notesString);
+
   if (!user) {
     return (
       <div className="flex justify-center items-center h-[60vh]">
@@ -34,7 +40,7 @@ const Checkout = () => {
       <h1 className="text-2xl font-bold mb-6">Finalizar compra</h1>
 
       {/* RESUMEN DE PRODUCTOS CON IMÁGENES */}
-      <div className="bg-base-200 p-5 rounded-xl mb-8 shadow-inner">
+      <div className="bg-base-200 p-5 rounded-xl mb-6 shadow-inner">
         <h2 className="font-bold mb-4 text-lg">Tu pedido</h2>
 
         {cart.map((item) => (
@@ -62,6 +68,7 @@ const Checkout = () => {
       </div>
       {cart.length > 0 && (
         <>
+          <OrderNotes cart={cart} />
           {/* COMPONENTE DE SELECCIÓN DE ENVÍO */}
           <ShippingSelector />
 
