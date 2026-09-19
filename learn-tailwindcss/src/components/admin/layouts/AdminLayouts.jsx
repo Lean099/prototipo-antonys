@@ -18,7 +18,7 @@ function AdminLayout() {
       <div className="drawer-content flex flex-col">
         <Topbar />
 
-        <main className="flex-1 p-6 bg-base-200">
+        <main className="flex-1 p-6 bg-base-100">
           <Outlet />
         </main>
       </div>

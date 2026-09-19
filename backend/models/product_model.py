@@ -64,6 +64,11 @@ class Product(Base):
         nullable=True
     )
 
+    image_public_id = Column(
+        String(255),
+        nullable=True
+    )
+
     is_available = Column(
         Boolean,
         nullable=False,

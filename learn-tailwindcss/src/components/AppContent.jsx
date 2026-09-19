@@ -19,6 +19,9 @@ import Users from './admin/pages/Users';
 import Settings from './admin/pages/Settings';
 import ProductModal from './admin/modals/ProductModal';
 import DeleteProductModal from './admin/modals/DeleteProductModal';
+import CategoryModal from './admin/modals/CategoryModal';
+import DeleteCategoryModal from './admin/modals/DeleteCategoryModal';
+import UserModal from './admin/modals/UserModal';
 
 const AppContent = () => {
   const location = useLocation();
@@ -72,6 +75,9 @@ const AppContent = () => {
       <DeleteAddressModal />
       <ProductModal />
       <DeleteProductModal />
+      <CategoryModal />
+      <DeleteCategoryModal />
+      <UserModal />
       <ScrollToTop />
     </>
   );

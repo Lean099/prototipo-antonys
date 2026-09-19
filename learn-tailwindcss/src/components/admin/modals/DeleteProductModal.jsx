@@ -1,19 +1,29 @@
 import { useModalStore } from '../../../store/useModalStore';
+import { useMenuStore } from '../../../store/useMenuStore';
+import axios from 'axios';
 
 const DeleteProductModal = () => {
   const activeModal = useModalStore((state) => state.activeModal);
+  const setProducts = useMenuStore((state) => state.setProducts);
   const modalData = useModalStore((state) => state.modalData);
   const closeModal = useModalStore((state) => state.closeModal);
 
   const product = modalData?.product;
+  console.log('Producto a eliminar:', product);
 
   if (activeModal !== 'deleteProduct') return null;
 
-  const handleDelete = () => {
+  const handleDelete = async () => {
     if (!product) return;
 
-    console.log('Eliminar producto:', product);
-
+    try {
+      await axios.delete(`${import.meta.env.VITE_API_URL}/products/deleteProduct/${product.id}`);
+      const res = await axios.get(`${import.meta.env.VITE_API_URL}/products/getAllProducts`);
+      setProducts(res.data);
+      console.log('Producto eliminado:', product);
+    } catch (error) {
+      console.error('Error al eliminar el producto:', error);
+    }
     closeModal();
   };
 

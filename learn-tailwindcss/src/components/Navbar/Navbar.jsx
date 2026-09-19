@@ -75,6 +75,11 @@ const Navbar = () => {
                   </Link>
                 </li>
                 <li>
+                  <Link className="flex justify-center w-full" to="/admin">
+                    Panel Administrativo
+                  </Link>
+                </li>
+                <li>
                   <button onClick={logoutUser} className="flex justify-center w-full">
                     Cerrar sesión
                   </button>
@@ -151,6 +156,9 @@ const Navbar = () => {
               </li>
               <li>
                 <Link to="/pedidos">Pedidos</Link>
+              </li>
+              <li>
+                <Link to="/admin">Panel Administrativo</Link>
               </li>
               <li>
                 <a onClick={logoutUser}>Cerrar Sesion</a>

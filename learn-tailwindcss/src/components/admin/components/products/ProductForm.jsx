@@ -1,10 +1,13 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
+import { useMenuStore } from '../../../../store/useMenuStore';
+import axios from 'axios';
 
 const ProductForm = ({ product, onClose }) => {
+  const API_URL = import.meta.env.VITE_API_URL;
   const [formData, setFormData] = useState({
     name: product?.name || '',
     description: product?.description || '',
-    category: product?.category || '',
+    category: product?.category_id || '',
     price: product?.price || '',
     hasStock: product?.hasStock ?? true,
     stock: product?.stock ?? '',
@@ -12,7 +15,23 @@ const ProductForm = ({ product, onClose }) => {
     imageUrl: product?.imageUrl || '',
   });
 
+  const [imageFile, setImageFile] = useState(null);
+  const [imagePreview, setImagePreview] = useState(product?.imageUrl || '');
+  const fileInputRef = useRef(null);
+
   const isEditing = Boolean(product);
+
+  const categories = useMenuStore((state) => state.categories);
+  const setProducts = useMenuStore((state) => state.setProducts);
+
+  // Liberar la URL temporal cuando el componente se desmonta
+  useEffect(() => {
+    return () => {
+      if (imagePreview?.startsWith('blob:')) {
+        URL.revokeObjectURL(imagePreview);
+      }
+    };
+  }, [imagePreview]);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -23,12 +42,96 @@ const ProductForm = ({ product, onClose }) => {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+
+    if (!file) return;
+
+    // Guardamos el archivo para enviarlo más adelante
+    setImageFile(file);
+
+    // Creamos una URL temporal para la vista previa
+    const previewUrl = URL.createObjectURL(file);
+    setImagePreview(previewUrl);
+
+    // Ya no necesitamos la URL anterior si seleccionamos una imagen nueva
+    setFormData((prev) => ({
+      ...prev,
+      imageUrl: '',
+    }));
+  };
+
+  const handleRemoveImage = () => {
+    // Liberamos la URL temporal si existe
+    if (imagePreview?.startsWith('blob:')) {
+      URL.revokeObjectURL(imagePreview);
+    }
+
+    setImageFile(null);
+    setImagePreview('');
+
+    // Limpiamos el input file
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    console.log('Producto:', formData);
+    const price = Number(formData.price);
+    const stock = Number(formData.stock);
 
-    onClose();
+    if (price < 0) {
+      alert('El precio no puede ser menor a 0');
+      return;
+    }
+
+    if (formData.hasStock && stock < 0) {
+      alert('El stock no puede ser menor a 0');
+      return;
+    }
+
+    const data = new FormData();
+
+    data.append('category_id', formData.category);
+    data.append('name', formData.name);
+    data.append('description', formData.description);
+    data.append('price', formData.price);
+    data.append('has_stock', formData.hasStock);
+    data.append('stock', formData.stock);
+    data.append('is_available', formData.isAvailable);
+
+    if (imageFile) {
+      data.append('image', imageFile);
+    }
+
+    for (const [key, value] of data.entries()) {
+      console.log(key, value);
+    }
+
+    try {
+      if (isEditing) {
+        const res = await axios.put(`${API_URL}/products/updateProduct/${product.id}`, data);
+        if (res.status === 200) {
+          const products = await axios.get(`${API_URL}/products/getAllProducts`);
+          if (products.status === 200) {
+            setProducts(products.data);
+          }
+        }
+      } else {
+        const res = await axios.post(`${API_URL}/products/createProduct`, data);
+        if (res.status === 200) {
+          const products = await axios.get(`${API_URL}/products/getAllProducts`);
+          if (products.status === 200) {
+            setProducts(products.data);
+          }
+        }
+      }
+      onClose();
+    } catch (error) {
+      console.error('Error al crear el producto:', error);
+    }
   };
 
   return (
@@ -80,13 +183,15 @@ const ProductForm = ({ product, onClose }) => {
             className="select select-bordered w-full"
             required
           >
-            <option value="">Seleccionar categoría</option>
-            <option value="Hamburguesas">Hamburguesas</option>
-            <option value="Sandwiches">Sandwiches</option>
-            <option value="Pizzas">Pizzas</option>
-            <option value="Bebidas">Bebidas</option>
-            <option value="Agregados">Agregados</option>
-            <option value="Menús">Menús</option>
+            <option value="" disabled>
+              Seleccionar categoría
+            </option>
+
+            {categories.map((category) => (
+              <option key={category.id} value={category.id}>
+                {category.name}
+              </option>
+            ))}
           </select>
         </div>
 
@@ -117,6 +222,7 @@ const ProductForm = ({ product, onClose }) => {
             checked={formData.hasStock}
             onChange={handleChange}
             className="checkbox"
+            min="0"
           />
 
           <span className="font-medium">Este producto maneja stock</span>
@@ -143,21 +249,36 @@ const ProductForm = ({ product, onClose }) => {
       {/* Imagen */}
       <div>
         <label className="label">
-          <span className="label-text">URL de imagen</span>
+          <span className="label-text">Imagen del producto</span>
         </label>
 
         <input
-          type="url"
-          name="imageUrl"
-          value={formData.imageUrl}
-          onChange={handleChange}
-          placeholder="https://..."
-          className="input input-bordered w-full"
+          ref={fileInputRef}
+          type="file"
+          accept="image/*"
+          onChange={handleImageChange}
+          className="file-input file-input-bordered w-full"
         />
 
-        {formData.imageUrl && (
+        {imageFile && (
+          <div className="flex items-center justify-between mt-2 gap-3">
+            <p className="text-sm text-base-content/60 truncate">Imagen seleccionada: {imageFile.name}</p>
+
+            <button type="button" onClick={handleRemoveImage} className="btn btn-sm btn-error btn-outline">
+              Quitar
+            </button>
+          </div>
+        )}
+
+        {imagePreview && (
           <div className="mt-4">
-            <img src={formData.imageUrl} alt="Vista previa" className="w-32 h-32 object-cover rounded-lg border" />
+            <p className="text-sm font-medium mb-2">Vista previa</p>
+
+            <img
+              src={imagePreview}
+              alt="Vista previa del producto"
+              className="w-32 h-32 object-cover rounded-lg border border-base-300"
+            />
           </div>
         )}
       </div>

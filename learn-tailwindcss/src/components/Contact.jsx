@@ -1,44 +1,38 @@
-const Contact = ()=>{
-  const telefono = "+5438651234567"; // formato internacional SIN espacios
-  const mensaje = "Hola, quisiera consultar por sus servicios";
+import { Instagram, MessageCircleMore } from 'lucide-react';
+
+const Contact = () => {
+  const telefono = '+5438651234567'; // formato internacional SIN espacios
+  const mensaje = 'Hola, quisiera consultar por sus servicios';
 
   const horarios = [
-    { dia: "Lunes", horario: "21:00 - 1:00"},
-    { dia: "Martes", horario: "Cerrado"},
-    { dia: "Miércoles", horario: "Cerrado"},
-    { dia: "Jueves", horario: "21:00 - 1:00"},
-    { dia: "Viernes", horario: "21:00 - 1:00"},
-    { dia: "Sábado", horario: "21:00 - 1:00"},
-    { dia: "Domingo", horario: "21:00 - 1:00"}
+    { dia: 'Lunes', horario: '21:00 - 1:00' },
+    { dia: 'Martes', horario: 'Cerrado' },
+    { dia: 'Miércoles', horario: 'Cerrado' },
+    { dia: 'Jueves', horario: '21:00 - 1:00' },
+    { dia: 'Viernes', horario: '21:00 - 1:00' },
+    { dia: 'Sábado', horario: '21:00 - 1:00' },
+    { dia: 'Domingo', horario: '21:00 - 1:00' },
   ];
 
   return (
     <div className="max-w-6xl mx-auto p-4 sm:p-6">
-
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-
         {/* INFO */}
         <div className="space-y-6">
-
           <h2 className="text-2xl font-bold">Contacto</h2>
 
           {/* Dirección */}
-          <p><strong>Dirección:</strong> Diego de Villarroel 1819</p>
+          <p>
+            <strong>Dirección:</strong> Diego de Villarroel 1819
+          </p>
 
           {/* Teléfono + botones */}
           <div className="space-y-2">
-            <p><strong>Teléfono:</strong> +54 3865 1234567</p>
+            <p>
+              <strong>Teléfono:</strong> +54 3865 1234567
+            </p>
 
             <div className="flex gap-2 flex-wrap">
-
-              {/* Llamar */}
-              <a
-                href={`tel:${telefono}`}
-                className="btn btn-sm btn-primary"
-              >
-                📞 Llamar
-              </a>
-
               {/* WhatsApp */}
               <a
                 href={`https://wa.me/${telefono}?text=${encodeURIComponent(mensaje)}`}
@@ -46,9 +40,23 @@ const Contact = ()=>{
                 rel="noopener noreferrer"
                 className="btn btn-sm btn-success"
               >
-                💬 WhatsApp
+                <MessageCircleMore /> WhatsApp
               </a>
 
+              <a
+                href="https://www.instagram.com/antonysd2/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn btn-sm text-white border-0 d-inline-flex align-items-center gap-2"
+                style={{
+                  background: 'linear-gradient(45deg, #f9ce34 0%, #ee2a7b 50%, #6228d7 100%)',
+                  transition: 'opacity 0.2s ease',
+                }}
+                onMouseEnter={(e) => (e.currentTarget.style.opacity = '0.9')}
+                onMouseLeave={(e) => (e.currentTarget.style.opacity = '1')}
+              >
+                <Instagram className="w-5 h-5" /> Instagram
+              </a>
             </div>
           </div>
 
@@ -60,9 +68,7 @@ const Contact = ()=>{
               {horarios.map((h, i) => (
                 <div key={i} className="flex justify-between border-b pb-1">
                   <span>{h.dia}</span>
-                  <span className={h.horario === "Cerrado" ? "text-red-500" : "text-green-600"}>
-                    {h.horario}
-                  </span>
+                  <span className={h.horario === 'Cerrado' ? 'text-red-500' : 'text-green-600'}>{h.horario}</span>
                 </div>
               ))}
             </div>
@@ -72,12 +78,10 @@ const Contact = ()=>{
           <p className="text-sm text-gray-500">
             Nota: Los horarios pueden variar en feriados. Llamanos para confirmar.
           </p>
-
         </div>
 
         {/* MAPA */}
         <div className="space-y-3">
-
           <div className="w-full h-[400px] rounded-xl overflow-hidden shadow">
             <iframe
               title="Ubicación del negocio"
@@ -96,13 +100,10 @@ const Contact = ()=>{
           >
             📍 Abrir en Google Maps
           </a>
-
         </div>
-
       </div>
-
     </div>
   );
-}
+};
 
 export default Contact;
