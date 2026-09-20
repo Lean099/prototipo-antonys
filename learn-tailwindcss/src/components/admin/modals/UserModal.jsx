@@ -9,6 +9,7 @@ const UserModal = () => {
   if (activeModal !== 'user') return null;
 
   const user = modalData?.user;
+  const onSuccess = modalData?.onSuccess;
   const isEditing = Boolean(user);
 
   return (
@@ -20,7 +21,7 @@ const UserModal = () => {
 
         <h3 className="font-bold text-xl mb-6">{isEditing ? 'Editar usuario' : 'Nuevo usuario'}</h3>
 
-        <UserForm key={user?.id ?? 'new'} user={user} onClose={closeModal} />
+        <UserForm key={user?.id ?? 'new'} user={user} onClose={closeModal} onSuccess={onSuccess} />
       </div>
 
       <div className="modal-backdrop" onClick={closeModal} />

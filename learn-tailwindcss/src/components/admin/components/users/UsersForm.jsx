@@ -1,30 +1,65 @@
 import { useState } from 'react';
+import axios from 'axios';
 
-const UserForm = ({ user, onClose }) => {
+const UserForm = ({ user, onClose, onSuccess }) => {
+  const API_URL = import.meta.env.VITE_API_URL;
   const [formData, setFormData] = useState({
     username: user?.username || '',
     email: user?.email || '',
+    phone: user?.phone || '',
     password: '',
     role: user?.role || 'customer',
+    is_active: user?.is_active ?? true,
   });
 
   const isEditing = Boolean(user);
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
+    const { name, value, type, checked } = e.target;
 
     setFormData((prev) => ({
       ...prev,
-      [name]: value,
+      [name]: type === 'checkbox' ? checked : value,
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    console.log('Usuario:', formData);
+    try {
+      if (isEditing) {
+        // Actualizar usuario existente
+        const res = await axios.put(`${API_URL}/user/updateUser/${user.id}`, {
+          username: formData.username,
+          email: formData.email,
+          phone: formData.phone,
+          password: formData.password,
+          role: formData.role,
+          is_active: formData.is_active,
+        });
 
-    onClose();
+        if (res.status === 200) {
+          console.log('Usuario actualizado:', res.data);
+        }
+      } else {
+        // Crear nuevo usuario
+        const res = await axios.post(`${API_URL}/user/createUser`, formData);
+
+        if (res.status === 200) {
+          console.log('Usuario creado:', res.data);
+        }
+      }
+
+      console.log('Usuario:', formData);
+
+      // Refrescar la lista de usuarios
+      await onSuccess();
+
+      // Cerrar modal
+      onClose();
+    } catch (error) {
+      console.error('Error al guardar el usuario:', error);
+    }
   };
 
   return (
@@ -63,6 +98,22 @@ const UserForm = ({ user, onClose }) => {
         />
       </div>
 
+      {/* Teléfono */}
+      <div>
+        <label className="label">
+          <span className="label-text">Teléfono</span>
+        </label>
+
+        <input
+          type="tel"
+          name="phone"
+          value={formData.phone}
+          onChange={handleChange}
+          placeholder="3811234567"
+          className="input input-bordered w-full"
+        />
+      </div>
+
       {/* Contraseña */}
       <div>
         <label className="label">
@@ -88,11 +139,24 @@ const UserForm = ({ user, onClose }) => {
 
         <select name="role" value={formData.role} onChange={handleChange} className="select select-bordered w-full">
           <option value="customer">Cliente</option>
-
           <option value="employee">Empleado</option>
-
           <option value="admin">Administrador</option>
         </select>
+      </div>
+
+      {/* Usuario activo */}
+      <div>
+        <label className="label cursor-pointer justify-start gap-3">
+          <input
+            type="checkbox"
+            name="is_active"
+            checked={formData.is_active}
+            onChange={handleChange}
+            className="checkbox checkbox-primary"
+          />
+
+          <span className="label-text">Usuario activo</span>
+        </label>
       </div>
 
       {/* Acciones */}

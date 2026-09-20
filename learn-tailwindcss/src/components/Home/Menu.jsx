@@ -18,51 +18,49 @@ const Menu = () => {
   const setSelectedCategory = useMenuStore((state) => state.setSelectedCategory);
 
   useEffect(() => {
-    const fetchCategories = async () => {
+    const fetchMenu = async () => {
       try {
-        const res = await axios.get(`${API_URL}/categories/getAllCategories`);
-        if (res.status === 200) {
-          console.log('Categorías obtenidas:', res.data);
-          setCategories(res.data);
-        } else {
-          console.error('Error al obtener las categorías:', res.statusText);
+        const [categoriesRes, productsRes] = await Promise.all([
+          axios.get(`${API_URL}/categories/getAllCategories`),
+          axios.get(`${API_URL}/products/getAllProducts`),
+        ]);
+
+        if (categoriesRes.status === 200) {
+          setCategories(categoriesRes.data);
+        }
+
+        if (productsRes.status === 200) {
+          setProducts(productsRes.data);
         }
       } catch (error) {
-        console.error('Error al obtener las categorías:', error);
+        console.error('Error al actualizar el menú:', error);
       }
     };
 
-    const fetchProducts = async () => {
-      try {
-        const res = await axios.get(`${API_URL}/products/getAllProducts`);
-        if (res.status === 200) {
-          console.log('Productos obtenidos:', res.data);
-          setProducts(res.data);
-        } else {
-          console.error('Error al obtener los productos:', res.statusText);
-        }
-      } catch (error) {
-        console.error('Error al obtener los productos:', error);
-      }
-    };
-    fetchProducts();
-    fetchCategories();
+    // Obtener datos al entrar al Home
+    fetchMenu();
+
+    // Actualizar menú cada 30 segundos
+    const interval = setInterval(fetchMenu, 30000);
+
+    // Limpiar intervalo al desmontar el componente
+    return () => clearInterval(interval);
   }, []);
-
-  useEffect(() => {
-    console.log('Categorías actualizadas:', categories);
-  }, [categories]);
 
   const { theme } = useThemeStore();
 
-  // Crear categorías automáticament
-  // e
-  // Aca hay que corregir,
-  const ctg = [{ id: 'todos', name: 'Todos' }, ...categories];
-  console.log('Categorías únicas:', ctg);
+  // Categorías disponibles
+  const activeCategories = categories.filter((category) => category.is_active);
+
+  const activeCategoryIds = activeCategories.map((category) => category.id);
+
+  const ctg = [{ id: 'todos', name: 'Todos' }, ...activeCategories];
+
   // Filtrar productos
   const filteredMenu =
-    selectedCategory === 'todos' ? products : products.filter((item) => item.category_id === selectedCategory);
+    selectedCategory === 'todos'
+      ? products.filter((item) => activeCategoryIds.includes(item.category_id))
+      : products.filter((item) => item.category_id === selectedCategory);
 
   return (
     <div className={theme === 'cupcake' ? 'bg-base-100' : 'bg-base-300'}>
