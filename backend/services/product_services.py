@@ -2,14 +2,50 @@ from fastapi import HTTPException, UploadFile
 from sqlalchemy.exc import SQLAlchemyError
 
 from models.product_model import Product
+from models.product_size_model import ProductSize
 from schemas.product_schema import ProductCreate, ProductUpdate
 from services.cloudinary_services import (
     CloudinaryService,
     CloudinaryServiceError
 )
 
+ALLOWED_SIZE_NAMES = {
+    "simple",
+    "doble",
+    "triple",
+    "cuadruple"
+}
 
-async def createProduct(data: ProductCreate, db, image: UploadFile | None = None):
+def validate_sizes(sizes):
+    if not sizes:
+        return
+
+    size_names = [size.name for size in sizes]
+
+    if len(size_names) != 4:
+        raise HTTPException(
+            status_code=400,
+            detail="Un producto con tamaños debe tener exactamente 4 tamaños"
+        )
+
+    if len(set(size_names)) != 4:
+        raise HTTPException(
+            status_code=400,
+            detail="No puede haber tamaños repetidos"
+        )
+
+    if set(size_names) != ALLOWED_SIZE_NAMES:
+        raise HTTPException(
+            status_code=400,
+            detail="Los tamaños permitidos son: simple, doble, triple y cuadruple"
+        )
+
+
+async def createProduct(
+    data: ProductCreate,
+    db,
+    image: UploadFile | None = None
+):
     uploaded_image = None
 
     try:
@@ -23,11 +59,11 @@ async def createProduct(data: ProductCreate, db, image: UploadFile | None = None
                 detail="El producto ya existe"
             )
         
-        # Subir imagen a Cloudinary si existe
+        validate_sizes(data.sizes)
+
         if image:
             uploaded_image = await CloudinaryService.upload_image(image)
 
-        # Crear nuevo producto
         new_product = Product(
             category_id=data.category_id,
             name=data.name,
@@ -35,20 +71,23 @@ async def createProduct(data: ProductCreate, db, image: UploadFile | None = None
             price=data.price,
             has_stock=data.has_stock,
             stock=data.stock,
-            image_url=(
-                uploaded_image["secure_url"]
-                if uploaded_image
-                else None
-            ),
-            image_public_id=(
-                uploaded_image["public_id"]
-                if uploaded_image
-                else None
-            ),
+            image_url=uploaded_image["secure_url"] if uploaded_image else None,
+            image_public_id=uploaded_image["public_id"] if uploaded_image else None,
             is_available=data.is_available
         )
 
         db.add(new_product)
+
+        # Guardamos los tamaños si fueron enviados
+        for size in data.sizes:
+            new_size = ProductSize(
+                product=new_product,
+                name=size.name,
+                price=size.price
+            )
+
+            db.add(new_size)
+
         db.commit()
         db.refresh(new_product)
 
@@ -62,7 +101,12 @@ async def createProduct(data: ProductCreate, db, image: UploadFile | None = None
 
     except CloudinaryServiceError as exc:
         db.rollback()
-        print("ERROR CLOUDINARY EN PRODUCT SERVICE:", repr(exc))
+
+        print(
+            "ERROR CLOUDINARY EN PRODUCT SERVICE:",
+            repr(exc)
+        )
+
         raise HTTPException(
             status_code=500,
             detail="Error al subir la imagen del producto"
@@ -70,10 +114,12 @@ async def createProduct(data: ProductCreate, db, image: UploadFile | None = None
 
     except SQLAlchemyError as exc:
         db.rollback()
-        print("ERROR SQLALCHEMY:", repr(exc))
 
-        # Si Cloudinary subió la imagen pero falló la BD,
-        # eliminamos la imagen para no dejarla huérfana.
+        print(
+            "ERROR SQLALCHEMY:",
+            repr(exc)
+        )
+
         if uploaded_image:
             try:
                 await CloudinaryService.delete_image(
@@ -155,8 +201,6 @@ async def updateProduct(
                 detail="Producto no encontrado"
             )
 
-        # Verificar que el nuevo nombre no pertenezca
-        # a otro producto
         if data.name is not None and data.name != product.name:
             existing_product = db.query(Product).filter(
                 Product.name == data.name,
@@ -169,7 +213,6 @@ async def updateProduct(
                     detail="El producto ya existe"
                 )
 
-        # Actualizar campos
         if data.category_id is not None:
             product.category_id = data.category_id
 
@@ -191,29 +234,67 @@ async def updateProduct(
         if data.is_available is not None:
             product.is_available = data.is_available
 
-        # Reemplazar imagen
         if image:
-            # Guardamos el public_id anterior
             old_public_id = product.image_public_id
 
-            # Subimos primero la nueva imagen
-            uploaded_image = await CloudinaryService.upload_image(image)
+            uploaded_image = await CloudinaryService.upload_image(
+                image
+            )
 
             product.image_url = uploaded_image["secure_url"]
             product.image_public_id = uploaded_image["public_id"]
 
+        # Actualizar tamaños
+        if data.sizes is not None:
+
+            validate_sizes(data.sizes)
+
+            existing_sizes = {
+                size.name: size
+                for size in product.sizes
+            }
+
+            for size in data.sizes:
+
+                # El precio de Simple siempre es el precio
+                # principal del producto
+                size_price = (
+                    data.price
+                    if size.name == "simple"
+                    else size.price
+                )
+
+                if size.name in existing_sizes:
+                    existing_sizes[size.name].price = size_price
+
+                else:
+                    new_size = ProductSize(
+                        product=product,
+                        name=size.name,
+                        price=size_price
+                    )
+
+                    db.add(new_size)
+
+            # Eliminar tamaños que ya no fueron enviados
+            sent_size_names = {
+                size.name
+                for size in data.sizes
+            }
+
+            for size in product.sizes:
+                if size.name not in sent_size_names:
+                    db.delete(size)
+
         db.commit()
         db.refresh(product)
 
-        # La BD ya tiene la nueva imagen.
-        # Ahora podemos eliminar la anterior.
         if uploaded_image and old_public_id:
             try:
-                await CloudinaryService.delete_image(old_public_id)
-
+                await CloudinaryService.delete_image(
+                    old_public_id
+                )
             except CloudinaryServiceError:
-                # No hacemos rollback porque el producto
-                # ya fue actualizado correctamente.
                 pass
 
         return {
@@ -226,6 +307,7 @@ async def updateProduct(
 
     except CloudinaryServiceError:
         db.rollback()
+
         raise HTTPException(
             status_code=500,
             detail="Error al subir la nueva imagen del producto"
@@ -234,8 +316,6 @@ async def updateProduct(
     except SQLAlchemyError:
         db.rollback()
 
-        # Si la nueva imagen se subió pero falló la BD,
-        # eliminamos la nueva imagen.
         if uploaded_image:
             try:
                 await CloudinaryService.delete_image(
@@ -248,7 +328,6 @@ async def updateProduct(
             status_code=500,
             detail="Error al actualizar el producto"
         )
-
 
 def toggleProductAvailability(idProduct, db):
     try:

@@ -2,6 +2,7 @@ from fastapi import HTTPException
 from models.user_model import User
 from utils.hashPassword import hash_password, verify_password
 from services.auth_services import register_user
+from datetime import datetime, timezone
 
 def createUser(data, db):
     # Verificar si el username o email ya existen
@@ -245,11 +246,26 @@ def deleteUser(idUser, db):
             detail="Usuario no encontrado"
         )
 
-    # Las direcciones asociadas se eliminan automáticamente
-    # por la relación de cascada definida en el modelo.
-    db.delete(user)
+    # Si ya está desactivado, no hacemos nada
+    if not user.is_active:
+        return {
+            "details": "El usuario ya está desactivado"
+        }
+
+    # Desactivar usuario en lugar de eliminarlo
+    user.is_active = False
+    user.deleted_at = datetime.now(timezone.utc)
+
+    # Eliminar todas las direcciones del usuario
+    # gracias a cascade="all, delete-orphan"
+    user.addresses.clear()
+
+    # Los pedidos NO se eliminan.
+    # Sus address_id pasarán a NULL gracias a
+    # ON DELETE SET NULL y conservarán su snapshot
+    # de dirección (delivery_*).
     db.commit()
 
     return {
-        "details": "Usuario eliminado correctamente"
+        "details": "Usuario desactivado correctamente"
     }

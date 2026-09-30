@@ -34,7 +34,7 @@ class Order(Base):
     # Dirección seleccionada (puede ser null para pickup o mesa)
     address_id = Column(
         String,
-        ForeignKey("addresses.id"),
+        ForeignKey("addresses.id", ondelete="SET NULL"),
         nullable=True
     )
 

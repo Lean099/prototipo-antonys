@@ -3,7 +3,8 @@ from sqlalchemy import (
     ForeignKey,
     Integer,
     Numeric,
-    String
+    String,
+    Text
 )
 from sqlalchemy.orm import relationship
 
@@ -33,10 +34,22 @@ class OrderItem(Base):
         nullable=False
     )
 
-    # Snapshot del producto
+    product_size_id = Column(
+        String,
+        ForeignKey("product_sizes.id", ondelete="SET NULL"),
+        nullable=True
+    )
+
+    # Snapshot del producto al momento de realizar la compra
     product_name = Column(
         String(150),
         nullable=False
+    )
+
+    # Snapshot del tamaño
+    product_size_name = Column(
+        String(30),
+        nullable=True
     )
 
     unit_price = Column(
@@ -54,7 +67,11 @@ class OrderItem(Base):
         nullable=False
     )
 
-    # Relaciones
+    # Nota específica de este producto
+    notes = Column(
+        Text,
+        nullable=True
+    )
 
     order = relationship(
         "Order",
@@ -64,4 +81,8 @@ class OrderItem(Base):
     product = relationship(
         "Product",
         back_populates="order_items"
+    )
+
+    product_size = relationship(
+        "ProductSize"
     )

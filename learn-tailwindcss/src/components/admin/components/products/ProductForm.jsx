@@ -4,6 +4,7 @@ import axios from 'axios';
 
 const ProductForm = ({ product, onClose }) => {
   const API_URL = import.meta.env.VITE_API_URL;
+
   const [formData, setFormData] = useState({
     name: product?.name || '',
     description: product?.description || '',
@@ -15,8 +16,27 @@ const ProductForm = ({ product, onClose }) => {
     imageUrl: product?.imageUrl || '',
   });
 
+  const [hasSizes, setHasSizes] = useState(product?.sizes?.length > 0);
+
+  const [sizes, setSizes] = useState(() => {
+    const loadedSizes = {
+      doble: '',
+      triple: '',
+      cuadruple: '',
+    };
+
+    product?.sizes?.forEach((size) => {
+      if (size.name in loadedSizes) {
+        loadedSizes[size.name] = size.price;
+      }
+    });
+
+    return loadedSizes;
+  });
+
   const [imageFile, setImageFile] = useState(null);
   const [imagePreview, setImagePreview] = useState(product?.imageUrl || '');
+
   const fileInputRef = useRef(null);
 
   const isEditing = Boolean(product);
@@ -42,19 +62,25 @@ const ProductForm = ({ product, onClose }) => {
     }));
   };
 
+  const handleSizeChange = (e) => {
+    const { name, value } = e.target;
+
+    setSizes((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
   const handleImageChange = (e) => {
     const file = e.target.files[0];
 
     if (!file) return;
 
-    // Guardamos el archivo para enviarlo más adelante
     setImageFile(file);
 
-    // Creamos una URL temporal para la vista previa
     const previewUrl = URL.createObjectURL(file);
     setImagePreview(previewUrl);
 
-    // Ya no necesitamos la URL anterior si seleccionamos una imagen nueva
     setFormData((prev) => ({
       ...prev,
       imageUrl: '',
@@ -62,7 +88,6 @@ const ProductForm = ({ product, onClose }) => {
   };
 
   const handleRemoveImage = () => {
-    // Liberamos la URL temporal si existe
     if (imagePreview?.startsWith('blob:')) {
       URL.revokeObjectURL(imagePreview);
     }
@@ -70,7 +95,6 @@ const ProductForm = ({ product, onClose }) => {
     setImageFile(null);
     setImagePreview('');
 
-    // Limpiamos el input file
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
@@ -81,6 +105,17 @@ const ProductForm = ({ product, onClose }) => {
 
     const price = Number(formData.price);
     const stock = Number(formData.stock);
+
+    if (hasSizes) {
+      const requiredSizes = ['doble', 'triple', 'cuadruple'];
+
+      const hasInvalidSize = requiredSizes.some((size) => sizes[size] === '' || Number(sizes[size]) < 0);
+
+      if (hasInvalidSize) {
+        alert('Debes ingresar un precio válido para todos los tamaños');
+        return;
+      }
+    }
 
     if (price < 0) {
       alert('El precio no puede ser menor a 0');
@@ -102,6 +137,30 @@ const ProductForm = ({ product, onClose }) => {
     data.append('stock', formData.stock);
     data.append('is_available', formData.isAvailable);
 
+    data.append(
+      'sizes',
+      hasSizes
+        ? JSON.stringify([
+            {
+              name: 'simple',
+              price: Number(formData.price),
+            },
+            {
+              name: 'doble',
+              price: Number(sizes.doble),
+            },
+            {
+              name: 'triple',
+              price: Number(sizes.triple),
+            },
+            {
+              name: 'cuadruple',
+              price: Number(sizes.cuadruple),
+            },
+          ])
+        : JSON.stringify([]),
+    );
+
     if (imageFile) {
       data.append('image', imageFile);
     }
@@ -113,21 +172,26 @@ const ProductForm = ({ product, onClose }) => {
     try {
       if (isEditing) {
         const res = await axios.put(`${API_URL}/products/updateProduct/${product.id}`, data);
+
         if (res.status === 200) {
           const products = await axios.get(`${API_URL}/products/getAllProducts`);
+
           if (products.status === 200) {
             setProducts(products.data);
           }
         }
       } else {
         const res = await axios.post(`${API_URL}/products/createProduct`, data);
+
         if (res.status === 200) {
           const products = await axios.get(`${API_URL}/products/getAllProducts`);
+
           if (products.status === 200) {
             setProducts(products.data);
           }
         }
       }
+
       onClose();
     } catch (error) {
       console.error('Error al crear el producto:', error);
@@ -212,6 +276,94 @@ const ProductForm = ({ product, onClose }) => {
           />
         </div>
       </div>
+
+      {/* Tamaños */}
+      <div>
+        <label className="label cursor-pointer justify-start gap-3">
+          <input
+            type="checkbox"
+            className="checkbox"
+            checked={hasSizes}
+            onChange={(e) => setHasSizes(e.target.checked)}
+          />
+
+          <span className="label-text font-medium">Este producto tiene tamaños</span>
+        </label>
+      </div>
+
+      {hasSizes && (
+        <div className="space-y-4 rounded-xl bg-base-200 p-4">
+          <h3 className="font-semibold">Precios por tamaño</h3>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {/* Simple */}
+            <div>
+              <label className="label">
+                <span className="label-text">Simple</span>
+              </label>
+
+              <input
+                type="number"
+                name="simple"
+                value={formData.price}
+                readOnly
+                className="input input-bordered w-full bg-base-200 cursor-not-allowed"
+              />
+            </div>
+
+            {/* Doble */}
+            <div>
+              <label className="label">
+                <span className="label-text">Doble</span>
+              </label>
+
+              <input
+                type="number"
+                name="doble"
+                min="0"
+                value={sizes.doble}
+                onChange={handleSizeChange}
+                className="input input-bordered w-full"
+                placeholder="Precio"
+              />
+            </div>
+
+            {/* Triple */}
+            <div>
+              <label className="label">
+                <span className="label-text">Triple</span>
+              </label>
+
+              <input
+                type="number"
+                name="triple"
+                min="0"
+                value={sizes.triple}
+                onChange={handleSizeChange}
+                className="input input-bordered w-full"
+                placeholder="Precio"
+              />
+            </div>
+
+            {/* Cuádruple */}
+            <div>
+              <label className="label">
+                <span className="label-text">Cuádruple</span>
+              </label>
+
+              <input
+                type="number"
+                name="cuadruple"
+                min="0"
+                value={sizes.cuadruple}
+                onChange={handleSizeChange}
+                className="input input-bordered w-full"
+                placeholder="Precio"
+              />
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Stock */}
       <div className="border rounded-lg p-4 space-y-4">

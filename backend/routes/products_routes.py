@@ -31,6 +31,7 @@ async def create_product(
     has_stock: bool = Form(False),
     stock: int | None = Form(None),
     is_available: bool = Form(True),
+    sizes: str | None = Form(None),
     image: UploadFile | None = File(None),
     db: Session = Depends(get_db)
 ):
@@ -41,7 +42,8 @@ async def create_product(
         price=price,
         has_stock=has_stock,
         stock=stock,
-        is_available=is_available
+        is_available=is_available,
+        sizes=sizes
     )
 
     return await createProduct(
@@ -52,10 +54,34 @@ async def create_product(
 
 
 @router.get("/getAllProducts")
-def get_all_products(
-    db: Session = Depends(get_db)
-):
-    return getAllProducts(db)
+def get_all_products(db: Session = Depends(get_db)):
+    products = getAllProducts(db)
+
+    return [
+        {
+            "id": product.id,
+            "category_id": product.category_id,
+            "name": product.name,
+            "description": product.description,
+            "price": product.price,
+            "has_stock": product.has_stock,
+            "stock": product.stock,
+            "image_url": product.image_url,
+            "is_available": product.is_available,
+            "created_at": product.created_at,
+            "updated_at": product.updated_at,
+            "sizes": [
+                {
+                    "id": size.id,
+                    "product_id": size.product_id,
+                    "name": size.name,
+                    "price": size.price
+                }
+                for size in product.sizes
+            ]
+        }
+        for product in products
+    ]
 
 
 @router.get("/getProductById/{idProduct}")
@@ -77,6 +103,7 @@ async def update_product(
     has_stock: bool | None = Form(None),
     stock: int | None = Form(None),
     is_available: bool | None = Form(None),
+    sizes: str | None = Form(None),
 
     image: UploadFile | None = File(None),
 
@@ -89,7 +116,8 @@ async def update_product(
         price=price,
         has_stock=has_stock,
         stock=stock,
-        is_available=is_available
+        is_available=is_available,
+        sizes=sizes
     )
 
     return await updateProduct(

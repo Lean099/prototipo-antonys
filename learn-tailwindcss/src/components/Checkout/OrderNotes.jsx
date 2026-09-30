@@ -1,42 +1,55 @@
 import { useState } from 'react';
 import { useCheckoutStore } from '../../store/useCheckoutStore';
+import formatSizeName from '../../utils/formatSizeName';
 
 const OrderNotes = ({ cart }) => {
-  const [selectedProductId, setSelectedProductId] = useState('');
+  const [selectedProductKey, setSelectedProductKey] = useState('');
   const [note, setNote] = useState('');
 
   const orderNotes = useCheckoutStore((state) => state.orderNotes);
   const addOrderNote = useCheckoutStore((state) => state.addOrderNote);
   const removeOrderNote = useCheckoutStore((state) => state.removeOrderNote);
 
-  const personalizedCount = (productId) => orderNotes.filter((item) => item.productId === productId).length;
+  // Identifica una línea del carrito por producto + tamaño
+  const getProductKey = (product) => `${product.id}-${product.sizeId ?? 'normal'}`;
+
+  const personalizedCount = (product) => {
+    const productKey = getProductKey(product);
+
+    return orderNotes.filter((item) => item.productKey === productKey).length;
+  };
 
   const availableProducts = cart.filter((product) => {
-    const personalized = personalizedCount(product.id);
+    const personalized = personalizedCount(product);
 
     return personalized < product.quantity;
   });
 
-  const selectedProduct = availableProducts.find((item) => item.id === Number(selectedProductId));
+  const selectedProduct = availableProducts.find((item) => getProductKey(item) === selectedProductKey);
 
   const handleAddNote = () => {
     if (!selectedProduct) return;
 
     if (!note.trim()) return;
 
+    const productKey = getProductKey(selectedProduct);
+
     addOrderNote({
+      productKey,
       productId: selectedProduct.id,
-      productName: selectedProduct.title,
+      sizeId: selectedProduct.sizeId ?? null,
+      productName: selectedProduct.name,
+      sizeName: selectedProduct.sizeName ?? null,
       quantity: 1,
       note: note.trim(),
     });
 
     setNote('');
 
-    const remaining = personalizedCount(selectedProduct.id) + 1 < selectedProduct.quantity;
+    const remaining = personalizedCount(selectedProduct) + 1 < selectedProduct.quantity;
 
     if (!remaining) {
-      setSelectedProductId('');
+      setSelectedProductKey('');
     }
   };
 
@@ -68,17 +81,21 @@ const OrderNotes = ({ cart }) => {
 
         <select
           className="select select-bordered w-full mb-4"
-          value={selectedProductId}
-          onChange={(e) => setSelectedProductId(e.target.value)}
+          value={selectedProductKey}
+          onChange={(e) => setSelectedProductKey(e.target.value)}
         >
           <option value="">Seleccionar producto</option>
 
           {availableProducts.map((product) => {
-            const personalized = personalizedCount(product.id);
+            const personalized = personalizedCount(product);
 
             return (
-              <option key={product.id} value={product.id}>
-                {product.title} ({personalized}/{product.quantity} personalizadas)
+              <option key={getProductKey(product)} value={getProductKey(product)}>
+                {product.isHamburger ? `Hamb. ${product.name.replace(/^Hamburguesa\s+/i, '')}` : product.name}
+
+                {product.sizeName && ` - ${formatSizeName(product.sizeName)}`}
+
+                {` (${personalized}/${product.quantity} personalizadas)`}
               </option>
             );
           })}
@@ -111,7 +128,21 @@ const OrderNotes = ({ cart }) => {
               {orderNotes.map((item, index) => (
                 <li key={index} className="flex items-center justify-between bg-base-100 rounded-lg px-3 py-2">
                   <span className="text-sm">
-                    ✓ <strong>{item.productName}</strong> — {item.note}
+                    ✓{' '}
+                    <strong>
+                      {item.isHamburger
+                        ? `Hamb. ${item.productName.replace(/^Hamburguesa\s+/i, '')}`
+                        : item.productName}
+
+                      {item.sizeName && (
+                        <span className="opacity-70">
+                          {' - '}
+                          {formatSizeName(item.sizeName)}
+                        </span>
+                      )}
+                    </strong>
+                    {' — '}
+                    {item.note}
                   </span>
 
                   <button

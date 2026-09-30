@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { MapPin, Store, Plus, CheckCircle2 } from 'lucide-react';
+import { MapPin, Store, Utensils, Plus, CheckCircle2 } from 'lucide-react';
 import axios from 'axios';
 import { useAuthStore } from '../../store/authStore';
 
@@ -97,64 +97,53 @@ const ShippingSelector = () => {
 
       {/* OPTIONS */}
 
+      {/* OPTIONS */}
+
       <div
         className="
-          grid
-          grid-cols-1
-          sm:grid-cols-2
-          gap-4
-          mb-6
-        "
+    grid
+    grid-cols-1
+    sm:grid-cols-2
+    lg:grid-cols-3
+    gap-4
+    mb-6
+  "
       >
         {/* PICKUP */}
 
         <div
           onClick={() => setDeliveryOption('pickup')}
           className={`
-            p-4
-            border-2
-            rounded-xl
-            cursor-pointer
-            transition
-            flex
-            items-center
-            gap-4
+      p-4
+      border-2
+      rounded-xl
+      cursor-pointer
+      transition
+      flex
+      items-center
+      gap-4
 
-            ${
-              deliveryOption === 'pickup'
-                ? theme === 'cupcake'
-                  ? `
-                        border-neutral
-                        bg-neutral/5
-                        `
-                  : `
-                        border-secondary
-                        bg-secondary/5
-                        `
-                : 'border-base-300'
-            }
-          `}
+      ${
+        deliveryOption === 'pickup'
+          ? theme === 'cupcake'
+            ? `
+                border-neutral
+                bg-neutral/5
+              `
+            : `
+                border-secondary
+                bg-secondary/5
+              `
+          : 'border-base-300'
+      }
+    `}
         >
           <Store />
 
           <div>
-            <p
-              className="
-                font-bold
-                text-sm
-              "
-            >
-              Retiro por local
-            </p>
+            <p className="font-bold text-sm">Retiro por local</p>
 
-            <p
-              className="
-                text-xs
-                opacity-60
-              "
-            >
-              Sin costo adicional
-            </p>
+            <p className="text-xs opacity-60">Sin costo adicional</p>
           </div>
         </div>
 
@@ -163,50 +152,74 @@ const ShippingSelector = () => {
         <div
           onClick={() => setDeliveryOption('delivery')}
           className={`
-            p-4
-            border-2
-            rounded-xl
-            cursor-pointer
-            transition
-            flex
-            items-center
-            gap-4
+      p-4
+      border-2
+      rounded-xl
+      cursor-pointer
+      transition
+      flex
+      items-center
+      gap-4
 
-            ${
-              deliveryOption === 'delivery'
-                ? theme === 'cupcake'
-                  ? `
-                        border-neutral
-                        bg-neutral/5
-                        `
-                  : `
-                        border-secondary
-                        bg-secondary/5
-                        `
-                : 'border-base-300'
-            }
-          `}
+      ${
+        deliveryOption === 'delivery'
+          ? theme === 'cupcake'
+            ? `
+                border-neutral
+                bg-neutral/5
+              `
+            : `
+                border-secondary
+                bg-secondary/5
+              `
+          : 'border-base-300'
+      }
+    `}
         >
           <MapPin />
 
           <div>
-            <p
-              className="
-                font-bold
-                text-sm
-              "
-            >
-              Envío domicilio
-            </p>
+            <p className="font-bold text-sm">Envío a domicilio</p>
 
-            <p
-              className="
-                text-xs
-                opacity-60
-              "
-            >
-              30-45 min
-            </p>
+            <p className="text-xs opacity-60">30-45 min</p>
+          </div>
+        </div>
+
+        {/* TABLE */}
+
+        <div
+          onClick={() => setDeliveryOption('table')}
+          className={`
+      p-4
+      border-2
+      rounded-xl
+      cursor-pointer
+      transition
+      flex
+      items-center
+      gap-4
+
+      ${
+        deliveryOption === 'table'
+          ? theme === 'cupcake'
+            ? `
+                border-neutral
+                bg-neutral/5
+              `
+            : `
+                border-secondary
+                bg-secondary/5
+              `
+          : 'border-base-300'
+      }
+    `}
+        >
+          <Utensils />
+
+          <div>
+            <p className="font-bold text-sm">Comer en el local</p>
+
+            <p className="text-xs opacity-60">Sin costo adicional</p>
           </div>
         </div>
       </div>

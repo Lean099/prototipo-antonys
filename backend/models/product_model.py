@@ -97,3 +97,9 @@ class Product(Base):
         "OrderItem",
         back_populates="product"
     )
+
+    sizes = relationship(
+    "ProductSize",
+    back_populates="product",
+    cascade="all, delete-orphan"
+    )
