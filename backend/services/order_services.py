@@ -1,4 +1,5 @@
 from decimal import Decimal
+from math import ceil
 
 from fastapi import HTTPException
 from sqlalchemy.exc import SQLAlchemyError
@@ -228,6 +229,74 @@ def getAllOrders(db: Session):
             status_code=500,
             detail="Error al obtener las órdenes"
         )
+    
+    
+def getMyOrders(
+    user_id,
+    db: Session,
+    page: int = 1,
+    limit: int = 10,
+    status: str | None = None,
+    sort: str = "newest"
+):
+    try:
+        if page < 1:
+            raise HTTPException(
+                status_code=400,
+                detail="La página debe ser mayor a 0"
+            )
+
+        if limit < 1 or limit > 50:
+            raise HTTPException(
+                status_code=400,
+                detail="El límite debe estar entre 1 y 50"
+            )
+
+        query = db.query(Order).filter(
+            Order.user_id == user_id
+        )
+
+        if status:
+            query = query.filter(
+                Order.status == status
+            )
+
+        if sort == "oldest":
+            query = query.order_by(
+                Order.created_at.asc()
+            )
+        else:
+            query = query.order_by(
+                Order.created_at.desc()
+            )
+
+        total = query.count()
+
+        total_pages = ceil(total / limit) if total > 0 else 0
+
+        offset = (page - 1) * limit
+
+        orders = query.offset(offset).limit(limit).all()
+
+        for order in orders:
+            order.items
+
+        return {
+            "items": orders,
+            "page": page,
+            "limit": limit,
+            "total": total,
+            "total_pages": total_pages
+        }
+
+    except HTTPException:
+        raise
+
+    except SQLAlchemyError:
+        raise HTTPException(
+            status_code=500,
+            detail="Error al obtener los pedidos del usuario"
+        )
 
 
 def getOrderById(idOrder, db: Session):
@@ -330,4 +399,149 @@ def toggleOrderPaymentStatus(idOrder, db: Session):
         raise HTTPException(
             status_code=500,
             detail="Error al actualizar el estado de pago de la orden"
+        )
+    
+def updateOrderItemNotes(
+    order_id,
+    item_id,
+    unit_number,
+    user_id,
+    notes,
+    db: Session
+):
+    try:
+        order = db.query(Order).filter(
+            Order.id == order_id,
+            Order.user_id == user_id
+        ).first()
+
+        if not order:
+            raise HTTPException(
+                status_code=404,
+                detail="Pedido no encontrado"
+            )
+
+        if order.status != "pending":
+            raise HTTPException(
+                status_code=400,
+                detail="Solo se pueden modificar pedidos pendientes"
+            )
+
+        order_item = db.query(OrderItem).filter(
+            OrderItem.id == item_id,
+            OrderItem.order_id == order.id
+        ).first()
+
+        if not order_item:
+            raise HTTPException(
+                status_code=404,
+                detail="Producto del pedido no encontrado"
+            )
+
+        if unit_number < 1 or unit_number > order_item.quantity:
+            raise HTTPException(
+                status_code=400,
+                detail="Número de unidad inválido"
+            )
+
+        observations = []
+
+        if order_item.notes:
+            parts = order_item.notes.split(" | ")
+
+            for part in parts:
+                if part.startswith("Unidad "):
+                    try:
+                        number_text, observation = part.split(": ", 1)
+                        number = int(
+                            number_text.replace("Unidad ", "")
+                        )
+
+                        observations.append(
+                            (number, observation)
+                        )
+
+                    except ValueError:
+                        continue
+
+        updated_observations = {
+            number: observation
+            for number, observation in observations
+        }
+
+        if notes and notes.strip():
+            updated_observations[unit_number] = notes.strip()
+        else:
+            updated_observations.pop(unit_number, None)
+
+        order_item.notes = " | ".join(
+            f"Unidad {number}: {observation}"
+            for number, observation in sorted(
+                updated_observations.items()
+            )
+        ) or None
+
+        db.commit()
+        db.refresh(order_item)
+
+        return order_item
+
+    except HTTPException:
+        db.rollback()
+        raise
+
+    except SQLAlchemyError:
+        db.rollback()
+
+        raise HTTPException(
+            status_code=500,
+            detail="Error al actualizar la observación"
+        )
+
+def cancelOrder(
+    order_id,
+    user_id,
+    db: Session
+):
+    try:
+        order = db.query(Order).filter(
+            Order.id == order_id,
+            Order.user_id == user_id
+        ).first()
+
+        if not order:
+            raise HTTPException(
+                status_code=404,
+                detail="Pedido no encontrado"
+            )
+
+        if order.status == "cancelled":
+            raise HTTPException(
+                status_code=400,
+                detail="El pedido ya está cancelado"
+            )
+
+        if order.status != "pending":
+            raise HTTPException(
+                status_code=400,
+                detail="Solo se pueden cancelar pedidos pendientes"
+            )
+
+        order.status = "cancelled"
+
+        db.commit()
+        db.refresh(order)
+
+        return order
+
+    except HTTPException:
+        db.rollback()
+        raise
+
+    except SQLAlchemyError:
+        db.rollback()
+
+        raise HTTPException(
+            status_code=500,
+            detail="Error al cancelar el pedido"
         )

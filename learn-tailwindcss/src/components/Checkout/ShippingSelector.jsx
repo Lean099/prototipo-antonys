@@ -69,6 +69,22 @@ const ShippingSelector = () => {
   };
 
   useEffect(() => {
+    if (!user?.id) return;
+
+    const getAddresses = async () => {
+      try {
+        const response = await axios.get(`${API_URL}/user/getUserAddresses/${user.id}`);
+
+        setAddresses(response.data);
+      } catch (error) {
+        console.error('Error al obtener las direcciones:', error);
+      }
+    };
+
+    getAddresses();
+  }, [user?.id]);
+
+  useEffect(() => {
     if (!showForm) return;
 
     const element = formAnchorRef.current;

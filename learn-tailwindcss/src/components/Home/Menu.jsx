@@ -59,8 +59,8 @@ const Menu = () => {
   // Filtrar productos
   const filteredMenu =
     selectedCategory === 'todos'
-      ? products.filter((item) => activeCategoryIds.includes(item.category_id))
-      : products.filter((item) => item.category_id === selectedCategory);
+      ? products.filter((item) => item.is_available && activeCategoryIds.includes(item.category_id))
+      : products.filter((item) => item.is_available && item.category_id === selectedCategory);
 
   return (
     <div className={theme === 'cupcake' ? 'bg-base-100' : 'bg-base-300'}>

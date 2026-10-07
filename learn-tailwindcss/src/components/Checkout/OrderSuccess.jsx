@@ -1,6 +1,8 @@
 import formatSizeName from '../../utils/formatSizeName';
+import { useNavigate } from 'react-router-dom';
 
 const OrderSuccess = ({ order }) => {
+  const navigate = useNavigate();
   const handleWhatsApp = () => {
     const phone = import.meta.env.VITE_WHATSAPP_NUMBER;
 
@@ -198,9 +200,19 @@ ${mapsUrl}`;
         </div>
       </div>
 
-      <button type="button" className="btn btn-success w-full mt-6" onClick={handleWhatsApp}>
-        Enviar pedido por WhatsApp
-      </button>
+      <div className="mt-6 space-y-3">
+        <button type="button" className="btn btn-success w-full" onClick={handleWhatsApp}>
+          Enviar pedido por WhatsApp
+        </button>
+
+        <button type="button" className="btn btn-primary w-full" onClick={() => navigate('/pedidos')}>
+          Ver mis pedidos
+        </button>
+
+        <button type="button" className="btn btn-outline w-full" onClick={() => navigate('/#menu')}>
+          Volver al menú
+        </button>
+      </div>
     </div>
   );
 };

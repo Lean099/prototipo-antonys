@@ -74,3 +74,6 @@ class OrderResponse(BaseModel):
 
     class Config:
         from_attributes = True
+
+class OrderItemNotesUpdate(BaseModel):
+    notes: Optional[str] = None

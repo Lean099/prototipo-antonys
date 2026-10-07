@@ -22,6 +22,7 @@ import DeleteProductModal from './admin/modals/DeleteProductModal';
 import CategoryModal from './admin/modals/CategoryModal';
 import DeleteCategoryModal from './admin/modals/DeleteCategoryModal';
 import UserModal from './admin/modals/UserModal';
+import OrderDetailModal from './OrderDetailModal';
 
 const AppContent = () => {
   const location = useLocation();
@@ -79,6 +80,7 @@ const AppContent = () => {
       <DeleteCategoryModal />
       <UserModal />
       <ScrollToTop />
+      <OrderDetailModal />
     </>
   );
 };
