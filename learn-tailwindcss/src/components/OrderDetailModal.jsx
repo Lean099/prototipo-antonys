@@ -7,6 +7,7 @@ const OrderDetailModal = () => {
   const activeModal = useModalStore((state) => state.activeModal);
   const modalData = useModalStore((state) => state.modalData);
   const closeModal = useModalStore((state) => state.closeModal);
+  const setModalData = useModalStore((state) => state.setModalData);
 
   const user = useAuthStore((state) => state.user);
 
@@ -32,7 +33,16 @@ const OrderDetailModal = () => {
       case 'confirmed':
         return 'badge-info';
 
-      case 'completed':
+      case 'preparing':
+        return 'badge-primary';
+
+      case 'ready':
+        return 'badge-success';
+
+      case 'on_the_way':
+        return 'badge-info';
+
+      case 'delivered':
         return 'badge-success';
 
       case 'cancelled':
@@ -51,11 +61,24 @@ const OrderDetailModal = () => {
       case 'confirmed':
         return 'Confirmado';
 
-      case 'completed':
-        return 'Completado';
+      case 'preparing':
+        return 'En preparación';
+
+      case 'ready':
+        return 'Listo para retirar';
+
+      case 'on_the_way':
+        return 'En camino';
+
+      case 'delivered':
+        return 'Entregado';
 
       case 'cancelled':
         return 'Cancelado';
+
+      // Compatibilidad con pedidos antiguos.
+      case 'completed':
+        return 'Completado';
 
       default:
         return status;
@@ -174,41 +197,39 @@ const OrderDetailModal = () => {
       setSavingNotes(true);
       setNotesError(null);
 
-      for (const item of order.items ?? []) {
-        for (let unit = 1; unit <= item.quantity; unit++) {
-          await axios.put(
-            `${import.meta.env.VITE_API_URL}/orders/updateOrderItemNotes/${order.id}/${item.id}/${unit}`,
-            {
-              notes: notes[item.id]?.[unit] ?? '',
-            },
-            {
-              params: {
-                user_id: user.id,
-              },
-            },
-          );
-        }
-      }
+      const payload = {
+        expected_updated_at: order.updated_at,
+        items: (order.items ?? []).map((item) => ({
+          item_id: item.id,
+          units: Array.from({ length: item.quantity }, (_, index) => {
+            const unitNumber = index + 1;
 
-      // Actualizar las observaciones del pedido localmente
-      const updatedItems = order.items.map((item) => {
-        const itemNotes = [];
+            return {
+              unit_number: unitNumber,
+              notes: notes[item.id]?.[unitNumber]?.trim() || null,
+            };
+          }),
+        })),
+      };
 
-        for (let unit = 1; unit <= item.quantity; unit++) {
-          const observation = notes[item.id]?.[unit]?.trim();
+      const response = await axios.put(
+        `${import.meta.env.VITE_API_URL}/orders/updateOrderNotesBulk/${order.id}`,
+        payload,
+        {
+          params: {
+            user_id: user.id,
+          },
+        },
+      );
 
-          if (observation) {
-            itemNotes.push(`Unidad ${unit}: ${observation}`);
-          }
-        }
-
-        return {
-          ...item,
-          notes: itemNotes.length > 0 ? itemNotes.join(' | ') : null,
-        };
+      // Actualizar el pedido dentro de Zustand.
+      setModalData({
+        ...modalData,
+        order: response.data,
       });
 
-      modalData.order.items = updatedItems;
+      // Actualizar también la lista de pedidos.
+      await modalData?.onUpdated?.();
 
       setEditingNotes(false);
       setNotes({});

@@ -2,15 +2,27 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
 from config.database import get_db
-from schemas.order_schema import OrderCreate, OrderItemNotesUpdate
+from schemas.order_schema import (
+    OrderCreate,
+    OrderItemNotesUpdate,
+    OrderBulkNotesUpdate,
+    AdminOrderCreate,
+    AdminOrderUpdate,
+    OrderStatusUpdate,
+    OrderPaymentStatusUpdate
+)
 from services.order_services import (
     createOrder,
+    adminCreateOrder,
     getAllOrders,
+    adminGetOrders,
+    adminUpdateOrder,
     getMyOrders,
     getOrderById,
-    toggleOrderStatus,
-    toggleOrderPaymentStatus,
+    updateOrderStatus,
+    updateOrderPaymentStatus,
     updateOrderItemNotes,
+    updateOrderNotesBulk,
     cancelOrder
 )
 
@@ -28,12 +40,52 @@ def create_order(
 ):
     return createOrder(data, db)
 
+@router.post("/adminCreateOrder")
+def admin_create_order(
+    data: AdminOrderCreate,
+    db: Session = Depends(get_db)
+):
+    return adminCreateOrder(data, db)
+
+
+@router.put("/adminUpdateOrder/{order_id}")
+def admin_update_order(
+    order_id: str,
+    data: AdminOrderUpdate,
+    db: Session = Depends(get_db)
+):
+    return adminUpdateOrder(
+        order_id,
+        data,
+        db
+    )
+
 
 @router.get("/getAllOrders")
 def get_all_orders(
     db: Session = Depends(get_db)
 ):
     return getAllOrders(db)
+
+@router.get("/adminGetOrders")
+def admin_get_orders(
+    page: int = 1,
+    limit: int = 10,
+    status: str | None = None,
+    order_type: str | None = None,
+    order_source: str | None = None,
+    sort: str = "newest",
+    db: Session = Depends(get_db)
+):
+    return adminGetOrders(
+        db,
+        page,
+        limit,
+        status,
+        order_type,
+        order_source,
+        sort
+    )
 
 @router.get("/getMyOrders/{user_id}")
 def get_my_orders(
@@ -60,20 +112,30 @@ def get_order_by_id(
 ):
     return getOrderById(order_id, db)
 
-@router.put("/toggleOrderStatus/{order_id}")
-def toggle_order_status(
+
+@router.put("/updateOrderStatus/{order_id}")
+def update_order_status(
     order_id: str,
+    data: OrderStatusUpdate,
     db: Session = Depends(get_db)
 ):
-    return toggleOrderStatus(order_id, db)
+    return updateOrderStatus(
+        order_id,
+        data.status,
+        db
+    )
 
-
-@router.put("/toggleOrderPaymentStatus/{order_id}")
-def toggle_order_payment_status(
+@router.put("/updateOrderPaymentStatus/{order_id}")
+def update_order_payment_status(
     order_id: str,
+    data: OrderPaymentStatusUpdate,
     db: Session = Depends(get_db)
 ):
-    return toggleOrderPaymentStatus(order_id, db)
+    return updateOrderPaymentStatus(
+        order_id,
+        data.payment_status,
+        db
+    )
 
 @router.put("/updateOrderItemNotes/{order_id}/{item_id}/{unit_number}")
 def update_order_item_notes(
@@ -90,6 +152,20 @@ def update_order_item_notes(
         unit_number,
         user_id,
         data.notes,
+        db
+    )
+
+@router.put("/updateOrderNotesBulk/{order_id}")
+def update_order_notes_bulk(
+    order_id: str,
+    user_id: str,
+    data: OrderBulkNotesUpdate,
+    db: Session = Depends(get_db)
+):
+    return updateOrderNotesBulk(
+        order_id,
+        user_id,
+        data,
         db
     )
 

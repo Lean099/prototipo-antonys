@@ -69,7 +69,16 @@ const Orders = () => {
       case 'confirmed':
         return 'badge-info';
 
-      case 'completed':
+      case 'preparing':
+        return 'badge-primary';
+
+      case 'ready':
+        return 'badge-success';
+
+      case 'on_the_way':
+        return 'badge-info';
+
+      case 'delivered':
         return 'badge-success';
 
       case 'cancelled':
@@ -88,11 +97,24 @@ const Orders = () => {
       case 'confirmed':
         return 'Confirmado';
 
-      case 'completed':
-        return 'Completado';
+      case 'preparing':
+        return 'En preparación';
+
+      case 'ready':
+        return 'Listo para retirar';
+
+      case 'on_the_way':
+        return 'En camino';
+
+      case 'delivered':
+        return 'Entregado';
 
       case 'cancelled':
         return 'Cancelado';
+
+      // Compatibilidad con pedidos antiguos.
+      case 'completed':
+        return 'Completado';
 
       default:
         return status;
@@ -205,7 +227,10 @@ const Orders = () => {
           <option value="all">Todos</option>
           <option value="pending">Pendientes</option>
           <option value="confirmed">Confirmados</option>
-          <option value="completed">Completados</option>
+          <option value="preparing">En preparación</option>
+          <option value="ready">Listos para retirar</option>
+          <option value="on_the_way">En camino</option>
+          <option value="delivered">Entregados</option>
           <option value="cancelled">Cancelados</option>
         </select>
 

@@ -4,7 +4,7 @@ import Sidebar from './Sidebar';
 import Topbar from './Topbar';
 
 import Dashboard from '../pages/Dashboard';
-import Orders from '../pages/Orders';
+import Orders from '../pages/AdminOrders';
 import Products from '../pages/Products';
 import Categories from '../pages/Categories';
 import Users from '../pages/Users';

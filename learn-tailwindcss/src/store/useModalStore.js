@@ -10,6 +10,11 @@ export const useModalStore = create((set) => ({
       modalData: data,
     }),
 
+  setModalData: (data) =>
+    set({
+      modalData: data,
+    }),
+
   closeModal: () =>
     set({
       activeModal: null,

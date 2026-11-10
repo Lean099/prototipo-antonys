@@ -59,10 +59,6 @@ def register_user(data, db):
             status_code=400,
             detail="El email ya está registrado"
         )
-    
-    print(data.password)
-    print(type(data.password))
-    print(len(data.password))
 
     new_user = User(
         username=data.username.lower(),

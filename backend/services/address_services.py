@@ -36,6 +36,9 @@ def createAddress(idUser, data, db):
         if data.longitude is not None:
             newAddress.longitude = data.longitude
 
+        if data.location_url is not None:
+            newAddress.location_url = data.location_url
+
         if data.is_default is not None:
             
             if data.is_default:
@@ -139,6 +142,13 @@ def updateAddress(idUser, idAddress, data, db):
 
         if data.longitude is not None:
             address.longitude = data.longitude
+
+        if "location_url" in data.model_fields_set:
+            address.location_url = (
+                data.location_url.strip()
+                if data.location_url and data.location_url.strip()
+                else None
+            )
 
         if data.is_default is not None:
             

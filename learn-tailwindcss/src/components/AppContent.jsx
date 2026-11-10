@@ -23,6 +23,7 @@ import CategoryModal from './admin/modals/CategoryModal';
 import DeleteCategoryModal from './admin/modals/DeleteCategoryModal';
 import UserModal from './admin/modals/UserModal';
 import OrderDetailModal from './OrderDetailModal';
+import AdminOrders from './admin/pages/AdminOrders';
 
 const AppContent = () => {
   const location = useLocation();
@@ -42,7 +43,7 @@ const AppContent = () => {
           }
         >
           <Route index element={<Dashboard />} />
-          <Route path="orders" element={<Orders />} />
+          <Route path="orders" element={<AdminOrders />} />
           <Route path="products" element={<Products />} />
           <Route path="categories" element={<Categories />} />
           <Route path="users" element={<Users />} />

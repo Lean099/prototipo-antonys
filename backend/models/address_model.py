@@ -67,6 +67,11 @@ class Address(Base):
         nullable=True
     )
 
+    location_url = Column(
+        String(500),
+        nullable=True
+    )
+
     is_default = Column(
         Boolean,
         nullable=False,

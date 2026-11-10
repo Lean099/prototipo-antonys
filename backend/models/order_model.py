@@ -105,6 +105,14 @@ class Order(Base):
         nullable=False
     )
 
+    # customer | employee
+    order_source = Column(
+        String(20),
+        nullable=False,
+        default="customer"
+    )
+    
+
     # Solo para pedidos en mesas
     table_number = Column(
         String(10),
@@ -139,6 +147,11 @@ class Order(Base):
 
     delivery_longitude = Column(
         Float,
+        nullable=True
+    )
+
+    delivery_location_url = Column(
+        String(500),
         nullable=True
     )
 
